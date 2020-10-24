@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .env
 photos/
+*.DS_Store
 
 # C extensions
 *.so
