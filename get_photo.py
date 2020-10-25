@@ -37,13 +37,9 @@ def get_image_title(templates):
     return title
 
 
-def get_image(site, title):
+def resize_image(img, path):
     # vertical image: 1080x1350
     # horizontal image: 1080x566
-    file = site.images[title]
-    path = os.getcwd() + "/photos/" + title
-    with open(path, "wb") as fd:
-        file.download(fd)
     base = 1080
     img = Image.open(path)
     w, h = img.size
@@ -58,8 +54,15 @@ def get_image(site, title):
     elif h < 566:
         img = ImageOps.expand(img, border=(0, -int((h - 566) / 2)), fill="white")
 
-    img.save(path)
+    # img.save(path)
+    return img
 
+
+def get_image(site, title):
+    f = site.images[title]
+    path = os.getcwd() + "/photos/" + title
+    with open(path, "wb") as fd:
+        f.download(fd)
     return path
 
 
