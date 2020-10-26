@@ -37,24 +37,35 @@ def get_image_title(templates):
     return title
 
 
-def resize_image(img, path):
+def resize_image(path):
     # vertical image: 1080x1350
     # horizontal image: 1080x566
-    base = 1080
+    if os.path.getsize(path) > 3000000:
+        quality = 30
+    else:
+        quality = 100
+
+    base = 8192
     img = Image.open(path)
     w, h = img.size
-    wpercent = base / float(w)
-    hsize = int((float(h) * float(wpercent)))
-    img = img.resize((base, hsize), Image.ANTIALIAS)
-    w, h = img.size
+    if w > base:
+        wpercent = base / float(w)
+        hsize = int((float(h) * float(wpercent)))
+        img = img.resize((base, hsize), Image.ANTIALIAS)
+        w, h = img.size
+    if h > base:
+        hpercent = base / float(h)
+        wsize = int((float(w) * float(hpercent)))
+        img = img.resize((base, wsize), Image.ANTIALIAS)
 
-    if h > 1350:
-        img = ImageOps.expand(img, border=(int((h - 1350) / 2), 0), fill="white")
-        # img = img.crop((0, (h-1350)/2, w, h-((h-1350)/2)))
-    elif h < 566:
-        img = ImageOps.expand(img, border=(0, -int((h - 566) / 2)), fill="white")
+    # Adds a border to the image (optional)
+    # if h > 1350:
+    #     img = ImageOps.expand(img, border=(int((h - 1350) / 2), 0), fill="white")
+    #     # img = img.crop((0, (h-1350)/2, w, h-((h-1350)/2)))
+    # elif h < 566:
+    #     img = ImageOps.expand(img, border=(0, -int((h - 566) / 2)), fill="white")
 
-    # img.save(path)
+    img.save(path, quality=quality)
     return img
 
 
@@ -63,6 +74,9 @@ def get_image(site, title):
     path = os.getcwd() + "/photos/" + title
     with open(path, "wb") as fd:
         f.download(fd)
+
+    resize_image(path)
+
     return path
 
 
