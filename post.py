@@ -82,8 +82,6 @@ def get_image(site, title):
 def post(caption, path):
     with open(path, "rb") as imagefile:
         imagedata = imagefile.read()
-    dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-    load_dotenv(dotenv_path)
 
     token = os.getenv("ACCESS_TOKEN")
     token_secret = os.getenv("ACCESS_TOKEN_SECRET")
