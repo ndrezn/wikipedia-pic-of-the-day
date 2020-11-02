@@ -8,17 +8,19 @@ from dotenv import load_dotenv
 from PIL import Image, ImageOps
 import schedule
 import time
+import nltk
 
 
 def shorten_caption(caption, length):
     # Shorten the caption to a given length
+    tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
     if len(caption) > length:
-        caption = caption.split(".")
-        caption.reverse()
+        caption = tokenizer.tokenize(caption)
         new_caption = ""
-        while len(new_caption) + len(caption[-1]) < length and len(caption) > 1:
-            new_caption += f"{caption.pop()}. "
+        while len(new_caption) + len(caption[0]) < length and len(caption) > 1:
+            new_caption += f"{caption.pop(0)} "
         caption = new_caption
+
     return caption
 
 
@@ -26,7 +28,7 @@ def get_caption(templates):
     parsed_wikicode = templates[0].get("caption").value
     caption = parsed_wikicode.strip_code()
 
-    caption = shorten_caption(caption, 240)
+    caption = shorten_caption(caption, 280)
 
     return caption
 
@@ -40,12 +42,8 @@ def get_image_title(templates):
 def resize_image(path):
     # vertical image: 1080x1350
     # horizontal image: 1080x566
-    if os.path.getsize(path) > 3000000:
-        quality = 30
-    else:
-        quality = 100
 
-    base = 8192
+    base = 2160
     img = Image.open(path)
     w, h = img.size
     if w > base:
@@ -58,14 +56,15 @@ def resize_image(path):
         wsize = int((float(w) * float(hpercent)))
         img = img.resize((base, wsize), Image.ANTIALIAS)
 
-    # Adds a border to the image (optional)
-    # if h > 1350:
-    #     img = ImageOps.expand(img, border=(int((h - 1350) / 2), 0), fill="white")
-    #     # img = img.crop((0, (h-1350)/2, w, h-((h-1350)/2)))
-    # elif h < 566:
-    #     img = ImageOps.expand(img, border=(0, -int((h - 566) / 2)), fill="white")
+    img.save(path)
 
-    img.save(path, quality=quality)
+    quality = 30
+    while os.path.getsize(path) > 5242880 and quality > 0:
+        print(os.path.getsize(path))
+        img = Image.open(path)
+        img.save(path, quality=quality)
+        quality -= 5
+
     return img
 
 
@@ -127,7 +126,7 @@ def run():
 
 
 def schedule_task():
-    schedule.every().day.at("08:00").do(run)
+    schedule.every().day.at("09:30").do(run)
 
     while True:
         schedule.run_pending()

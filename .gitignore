@@ -5,6 +5,7 @@ __pycache__/
 .env
 photos/
 *.DS_Store
+.vscode/
 
 # C extensions
 *.so
