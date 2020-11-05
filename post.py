@@ -1,4 +1,4 @@
-from twitter import Twitter, OAuth
+import tweepy
 from mwclient import Site
 import mwparserfromhell as mw
 import datetime
@@ -23,19 +23,26 @@ def shorten_caption(caption, length):
     return caption
 
 
-def get_caption(templates):
-    parsed_wikicode = templates[0].get("caption").value
-    caption = parsed_wikicode.strip_code()
-
-    caption = shorten_caption(caption, 280)
-
-    return caption
-
-
-def get_image_title(templates):
-    parsed_wikicode = templates[0].get("image").value
-    title = parsed_wikicode.strip_code()
+def normalize_title(title):
+    title = title.strip()
+    if title[0] == ":":
+        title = title[1:]
+    title = title[0].upper() + title[1:]
+    title = title.replace(" ", "_")
+    title = "en.wikipedia.org/wiki/{}".format(title)
     return title
+
+
+def clean_text(page, item_to_get):
+    parsed_text = mw.parse(page.text())
+    if item_to_get == "link":
+        link = parsed_text.filter_wikilinks()[0].title
+        return normalize_title(link)
+    wikicode = parsed_text.filter_templates()
+    item = wikicode[0].get(item_to_get).value
+    plain_text = item.strip_code()
+
+    return plain_text
 
 
 def resize_image(path):
@@ -71,24 +78,34 @@ def get_image(site, title):
     return path
 
 
-def post(caption, path):
-    with open(path, "rb") as imagefile:
-        imagedata = imagefile.read()
-
+def post(caption, path, context):
     token = os.getenv("ACCESS_TOKEN")
     token_secret = os.getenv("ACCESS_TOKEN_SECRET")
     consumer_key = os.getenv("API_KEY")
     consumer_secret = os.getenv("API_SECRET_KEY")
 
-    t = Twitter(auth=OAuth(token, token_secret, consumer_key, consumer_secret))
+    # authenticating to access the twitter API
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(token, token_secret)
+    api = tweepy.API(auth)
 
-    t_upload = Twitter(
-        domain="upload.twitter.com",
-        auth=OAuth(token, token_secret, consumer_key, consumer_secret),
+    # Generate text tweet with media (image)
+    short_caption = shorten_caption(caption, 280)
+    status = api.update_with_media(filename=path, status=short_caption)
+    # Add reply tweet with a link to the original article
+    reply_text = "@WikiPicOfTheDay{} \noccurred in: {}"
+    excess_caption = shorten_caption(
+        caption[len(short_caption) :], 280 - len(reply_text.format(' "... "', context))
     )
+    if excess_caption:
+        reply_status = reply_text.format(f' "... {excess_caption}"', context)
+    else:
+        reply_status = reply_text.format("", context)
 
-    id_img = t_upload.media.upload(media=imagedata)["media_id_string"]
-    t.statuses.update(status=caption, media_ids=id_img)
+    api.update_status(
+        status=reply_status,
+        in_reply_to_status_id=status._json["id"],
+    )
 
     return True
 
@@ -105,12 +122,14 @@ def run():
     )
     site = Site("en.wikipedia.org")
     page = site.pages[title]
-    templates = mw.parse(page.text()).filter_templates()
 
-    caption = get_caption(templates)
-    image_title = get_image_title(templates)
+    caption = clean_text(page, "caption")
+    image_title = clean_text(page, "image")
+    first_link = clean_text(page, "link")
+
     path = get_image(site, image_title)
-    posted = post(caption, path)
+
+    posted = post(caption, path, first_link)
     print(date)
     return True
 

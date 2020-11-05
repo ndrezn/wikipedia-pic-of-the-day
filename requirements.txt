@@ -1,4 +1,4 @@
-twitter==1.18.0
+tweepy==3.9.0
 mwclient==0.10.1
 mwparserfromhell==0.5.4
 Pillow==8.0.1
