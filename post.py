@@ -93,7 +93,7 @@ def post(caption, path, context):
     short_caption = shorten_caption(caption, 280)
     status = api.update_with_media(filename=path, status=short_caption)
     # Add reply tweet with a link to the original article
-    reply_text = "@WikiPicOfTheDay{} \noccurred in: {}"
+    reply_text = "@WikiPicOfTheDay{} \noccurrs in: {}"
     excess_caption = shorten_caption(
         caption[len(short_caption) :], 280 - len(reply_text.format(' "... "', context))
     )
