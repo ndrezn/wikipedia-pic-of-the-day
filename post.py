@@ -4,7 +4,6 @@ import mwparserfromhell as mw
 import datetime
 import requests
 import os
-from dotenv import load_dotenv
 from PIL import Image, ImageOps
 import schedule
 import time
@@ -40,9 +39,6 @@ def get_image_title(templates):
 
 
 def resize_image(path):
-    # vertical image: 1080x1350
-    # horizontal image: 1080x566
-
     base = 2160
     img = Image.open(path)
     w, h = img.size
@@ -51,10 +47,6 @@ def resize_image(path):
         hsize = int((float(h) * float(wpercent)))
         img = img.resize((base, hsize), Image.ANTIALIAS)
         w, h = img.size
-    if h > base:
-        hpercent = base / float(h)
-        wsize = int((float(w) * float(hpercent)))
-        img = img.resize((base, wsize), Image.ANTIALIAS)
 
     img.save(path)
 
