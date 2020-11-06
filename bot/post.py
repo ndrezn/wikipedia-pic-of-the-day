@@ -15,7 +15,7 @@ def upload_statuses(caption, path, title):
         media=path,
     )
     # Add reply tweet with a link to the original article
-    link = text_parsers.normalize_title(title)
+    link = text_parsers.generate_link(title)
     reply_text = '{} Appears in the article "{}": {}'
     excess_caption = text_parsers.shorten_caption(
         caption[len(short_caption) :],
@@ -25,7 +25,9 @@ def upload_statuses(caption, path, title):
         reply_text = reply_text.format(f' "... {excess_caption.strip()}"', title, link)
     else:
         reply_text = reply_text.format("", title, link)
-    reply_status = api.PostUpdate(
+
+    context_api = twitter_creds.connect_context()
+    reply_status = context_api.PostUpdate(
         status=reply_text,
         in_reply_to_status_id=status.id,
         auto_populate_reply_metadata=True,

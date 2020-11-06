@@ -1,6 +1,7 @@
 import schedule
 import time
 import bot
+from dotenv import load_dotenv
 
 
 def schedule_task():
@@ -14,5 +15,6 @@ def schedule_task():
         time.sleep(60)  # wait minutes
 
 
+load_dotenv()
 bot.go()
 schedule_task()

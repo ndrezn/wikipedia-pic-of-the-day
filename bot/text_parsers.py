@@ -15,7 +15,7 @@ def shorten_caption(caption, length):
     return caption
 
 
-def normalize_title(title):
+def generate_link(title):
     title = title.strip()
     if title[0] == ":":
         title = title[1:]

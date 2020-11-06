@@ -9,3 +9,12 @@ def connect():
         access_token_key=os.getenv("ACCESS_TOKEN"),
         access_token_secret=os.getenv("ACCESS_TOKEN_SECRET"),
     )
+
+
+def connect_context():
+    return twitter.Api(
+        consumer_key=os.getenv("CONTEXT_API"),
+        consumer_secret=os.getenv("CONTEXT_API_SECRET"),
+        access_token_key=os.getenv("CONTEXT_ACCESS"),
+        access_token_secret=os.getenv("CONTEXT_ACCESS_SECRET"),
+    )
