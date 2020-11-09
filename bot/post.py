@@ -16,11 +16,15 @@ def upload_statuses(caption, path, title):
     )
     # Add reply tweet with a link to the original article
     link = text_parsers.generate_link(title)
+    title = title.split("#")[0]  # Cut off any pageheadings
     reply_text = '{} Appears in the article "{}": {}'
+
+    # Note that links are abbreviated to 23 characters
     excess_caption = text_parsers.shorten_caption(
         caption[len(short_caption) :],
-        280 - len(reply_text.format(' "... "', title, link)),
+        280 - len(reply_text.format(' "... "', title, link[:23])),
     )
+
     if excess_caption:
         reply_text = reply_text.format(f' "... {excess_caption.strip()}"', title, link)
     else:
