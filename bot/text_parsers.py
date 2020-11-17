@@ -6,6 +6,7 @@ from unidecode import unidecode
 
 def shorten_caption(caption, length):
     # Shorten the caption to a given length
+    nltk.data.path.append("/nltk_data/")
     tokenizer = nltk.data.load("tokenizers/punkt/english.pickle")
     if len(caption) > length:
         caption = tokenizer.tokenize(caption)
