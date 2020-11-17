@@ -32,6 +32,8 @@ def get_image(site, title):
     Download an image from Wikipedia to a local folder
     """
     f = site.images[title]
+    if not os.path.isdir(os.getcwd() + "/photos"):
+        os.mkdir(os.getcwd() + "/photos")
     path = os.getcwd() + "/photos/" + title
     with open(path, "wb") as fd:
         f.download(fd)
