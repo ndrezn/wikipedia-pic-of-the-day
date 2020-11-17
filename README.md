@@ -17,11 +17,11 @@ bash run.sh
 ```
 **To run with Docker (scheduled)**
 
-Build the container
+Build the container.
 ```
 docker build -t wiki-bot .
 ```
-Run the container in detached mode
+Run the container in detached mode.
 ```
 docker run --env-file .env -d wiki-bot
 ```
