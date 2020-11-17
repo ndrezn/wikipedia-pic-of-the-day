@@ -7,8 +7,8 @@ def schedule_task():
     """
     Task scheduler
     """
-    schedule.every().day.at("10:00").to("11:00").do(bot.go)
-
+    schedule.every().day.at("10:30").do(bot.go)
+    
     while True:
         schedule.run_pending()
         time.sleep(60)  # wait minutes
