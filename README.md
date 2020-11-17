@@ -16,6 +16,7 @@ Note that correct API keys are required.
 bash run.sh
 ```
 **To run with Docker (scheduled)**
+
 Build the container
 ```
 docker build -t wiki-bot .
