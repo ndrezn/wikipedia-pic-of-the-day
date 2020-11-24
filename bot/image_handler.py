@@ -34,7 +34,7 @@ def get_image(site, title):
     f = site.images[title]
     if not os.path.isdir(os.getcwd() + "/photos"):
         os.mkdir(os.getcwd() + "/photos")
-    path = os.getcwd() + "/photos/" + title
+    path = os.getcwd() + "/photos/" + title.strip()
     with open(path, "wb") as fd:
         f.download(fd)
 
