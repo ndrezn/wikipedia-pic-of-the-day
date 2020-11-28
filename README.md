@@ -8,8 +8,8 @@ Posts the picture of the day from Wikipedia daily to Twitter from [@wiki_potd](h
 
 Also powers a sibling account [@potd_context](https://twitter.com/potd_context), which posts article titles, links, and extra captioning.
 
-## Instructions
-Note that correct API keys are required.
+## Usage
+Note that correct API keys are required as environment variables.
 
 **To run with bash (instant)**
 ```
