@@ -23,3 +23,17 @@ jobs:
     - name: Post to Twitter
       run: |
         bash run.sh
+      env:
+         API_KEY: ${{secrets.API_KEY}}
+         API_SECRET_KEY: ${{secrets.API_SECRET_KEY}}
+         ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
+         ACCESS_TOKEN_SECRET: ${{secrets.ACCESS_TOKEN_SECRET}}
+         CONTEXT_API: ${{secrets.CONTEXT_API}}
+         CONTEXT_API_SECRET: ${{secrets.CONTEXT_API_SECRET}}
+         CONTEXT_ACCESS: ${{secrets.CONTEXT_ACCESS}}
+         CONTEXT_ACCESS_SECRET: ${{secrets.CONTEXT_ACCESS_SECRET}}
+         TEST_API: ${{secrets.TEST_API}}
+         TEST_API_SECRET: ${{secrets.TEST_API_SECRET}}
+         TEST_ACCESS: ${{secrets.TEST_ACCESS}}
+         TEST_ACCESS_SECRET: ${{secrets.TEST_ACCESS_SECRET}}
+         SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}} 
