@@ -11,17 +11,9 @@ Also powers a sibling account [@potd_context](https://twitter.com/potd_context),
 ## Usage
 Note that correct API keys are required as environment variables.
 
-**To run with bash (instant)**
+**To run**
 ```
+# CONFIGURE ENVIRONMENT VARIABLES
+pip install -r requirements.txt
 bash run.sh
-```
-**To run with Docker (scheduled)**
-
-Build the container.
-```
-docker build -t wiki-bot .
-```
-Run the container in detached mode.
-```
-docker run --env-file .env -d wiki-bot
 ```
