@@ -1,6 +1,7 @@
 from . import text_parsers, image_handler, twitter_creds
 import datetime
 from mwclient import Site
+import os
 
 
 def generate_primary_caption(caption):
@@ -82,5 +83,6 @@ def go(date=None, post=True, test=False):
     path = image_handler.get_image(site, image_title)
     if post:
         upload_statuses(caption, path, article_title, test)
+    os.remove(path)
 
     return caption, image_title, article_title
