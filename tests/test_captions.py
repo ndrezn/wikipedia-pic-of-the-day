@@ -42,9 +42,3 @@ def test_secondary_caption():
         'resource for the study of speciation in evolution." Appears '
         'in "Altolamprologus compressiceps": en.wikipedia.org/wiki/Altolamprologus_compressiceps'
     )
-
-
-def test_post():
-    date = datetime(2022, 5, 17)
-    caption, image_title, article_title = bot.go(date=date, post=True, test=True)
-    assert True
