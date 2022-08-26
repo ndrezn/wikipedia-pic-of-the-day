@@ -14,7 +14,6 @@ def shorten_caption(caption, length):
         while len(new_caption) + len(caption[0]) < length and len(caption) > 1:
             new_caption += f"{caption.pop(0)} "
         caption = new_caption
-
     return caption
 
 
