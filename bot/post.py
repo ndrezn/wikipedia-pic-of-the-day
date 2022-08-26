@@ -28,12 +28,15 @@ def generate_secondary_caption(title, caption, primary_caption):
     return reply_text
 
 
-def upload_statuses(caption, path, title):
+def upload_statuses(caption, path, title, test):
     """
     Upload two statuses to Twitter: One with a photo and most of the caption,
     and another replying to that tweet with more caption (if applicable) and context
     """
-    api = twitter_creds.connect()
+    if test:
+        api = twitter_creds.connect_test()
+    else:
+        api = twitter_creds.connect()
     primary_caption = generate_primary_caption(caption)
     status = api.PostUpdate(
         status=primary_caption,
@@ -41,7 +44,11 @@ def upload_statuses(caption, path, title):
     )
     secondary_caption = generate_secondary_caption(title, caption, primary_caption)
 
-    context_api = twitter_creds.connect_context()
+    if test:
+        context_api = twitter_creds.connect_test()
+    else:
+        context_api = twitter_creds.connect_context()
+
     reply_status = context_api.PostUpdate(
         status=secondary_caption,
         in_reply_to_status_id=status.id,
@@ -51,7 +58,7 @@ def upload_statuses(caption, path, title):
     return status, reply_status
 
 
-def go(date=None, post=True):
+def go(date=None, post=True, test=False):
     """
     Gets the photo of the day, downloads the photo, and triggers posting
     """
@@ -74,6 +81,6 @@ def go(date=None, post=True):
 
     path = image_handler.get_image(site, image_title)
     if post:
-        upload_statuses(caption, path, article_title)
+        upload_statuses(caption, path, article_title, test)
 
     return caption, image_title, article_title
