@@ -42,15 +42,21 @@ def clean_text(page, item_to_get):
             if "image" in i.name:
                 items.append(i.name)
         item = list(map(lambda i: wikicode[0].get(i).value.strip_code(), items))
+
         # Case in which the PoTD is a gallery
         if item[0] == "Blank300.png":
             item = []
             c = wikicode[0].get("caption")
             for i in c.splitlines():
-                if i.startswith("File:"):
-                    item.append(i.split("|")[0][5:])
+                i = i.split("|")[0]
+                if [i.endswith(".jpg") or i.endswith(".svg") or i.endswith(".png")]:
+                    if i.startswith("File:"):
+                        i = i[5:]
+                    item.append(i)
+
         # Truncate to four images
         item = item[:4]
+
     else:
         item = wikicode[0].get(item_to_get).value
         item = item.strip_code()
