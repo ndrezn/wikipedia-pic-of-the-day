@@ -80,7 +80,7 @@ def go(date=None, post=True, test=False):
     image_titles = text_parsers.clean_text(page, "image")
     article_title = text_parsers.clean_text(page, "title")
 
-    paths = [image_handler.get_image(site, i) for i in image_titles]
+    paths = [image_handler.get_image(site, i) for i in image_titles[:4]]
     if post:
         upload_statuses(caption, paths, article_title, test)
     for p in paths:
