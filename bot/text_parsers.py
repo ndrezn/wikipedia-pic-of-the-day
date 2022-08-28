@@ -35,7 +35,15 @@ def clean_text(page, item_to_get):
         title = unidecode(str(title)).strip()
         return title
     wikicode = parsed_text.filter_templates()
-    item = wikicode[0].get(item_to_get).value
-    plain_text = item.strip_code()
 
-    return plain_text
+    if item_to_get == "image":
+        items = []
+        for i in wikicode[0].params:
+            if "image" in i.name:
+                items.append(i.name)
+        item = list(map(lambda i: wikicode[0].get(i).value.strip_code(), items))
+    else:
+        item = wikicode[0].get(item_to_get).value
+        item = item.strip_code()
+
+    return item

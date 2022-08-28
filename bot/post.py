@@ -29,7 +29,7 @@ def generate_secondary_caption(title, caption, primary_caption):
     return reply_text
 
 
-def upload_statuses(caption, path, title, test):
+def upload_statuses(caption, paths, title, test):
     """
     Upload two statuses to Twitter: One with a photo and most of the caption,
     and another replying to that tweet with more caption (if applicable) and context
@@ -41,7 +41,7 @@ def upload_statuses(caption, path, title, test):
     primary_caption = generate_primary_caption(caption)
     status = api.PostUpdate(
         status=primary_caption,
-        media=path,
+        media=paths,
     )
     secondary_caption = generate_secondary_caption(title, caption, primary_caption)
 
@@ -77,12 +77,13 @@ def go(date=None, post=True, test=False):
     page = site.pages[title]
 
     caption = text_parsers.clean_text(page, "caption")
-    image_title = text_parsers.clean_text(page, "image")
+    image_titles = text_parsers.clean_text(page, "image")
     article_title = text_parsers.clean_text(page, "title")
 
-    path = image_handler.get_image(site, image_title)
+    paths = [image_handler.get_image(site, i) for i in image_titles]
     if post:
-        upload_statuses(caption, path, article_title, test)
-    os.remove(path)
+        upload_statuses(caption, paths, article_title, test)
+    for p in paths:
+        os.remove(p)
 
-    return caption, image_title, article_title
+    return caption, article_title
