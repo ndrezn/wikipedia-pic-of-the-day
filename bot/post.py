@@ -56,7 +56,7 @@ def upload_statuses(caption, paths, title, test):
         auto_populate_reply_metadata=True,
     )
 
-    return status, reply_status
+    return status.id, reply_status.id
 
 
 def go(date=None, post=True, test=False):
@@ -80,10 +80,11 @@ def go(date=None, post=True, test=False):
     image_titles = text_parsers.clean_text(page, "image")
     article_title = text_parsers.clean_text(page, "title")
 
-    paths = [image_handler.get_image(site, i) for i in image_titles]
+    ids = []
     if post:
-        upload_statuses(caption, paths, article_title, test)
-    for p in paths:
-        os.remove(p)
+        paths = [image_handler.get_image(site, i) for i in image_titles]
+        ids = upload_statuses(caption, paths, article_title, test)
+        for p in paths:
+            os.remove(p)
 
-    return caption, article_title
+    return caption, article_title, ids

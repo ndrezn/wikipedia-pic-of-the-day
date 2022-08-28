@@ -9,7 +9,7 @@ def test_main_caption_length():
         datetime(2022, 2, 17),
         datetime(2022, 4, 1),
     ]:
-        caption, article_title = bot.go(date=date, post=False)
+        caption, article_title, ids = bot.go(date=date, post=False)
         primary_caption = bot.post.generate_primary_caption(caption)
         secondary_caption = bot.post.generate_secondary_caption(
             article_title, caption, primary_caption
@@ -19,7 +19,7 @@ def test_main_caption_length():
 
 def test_main_caption():
     date = datetime(2022, 5, 17)
-    caption, article_title = bot.go(date=date, post=False)
+    caption, article_title, ids = bot.go(date=date, post=False)
     primary_caption = bot.post.generate_primary_caption(caption)
     assert primary_caption == (
         "Altolamprologus compressiceps is a species of fish in the "
@@ -31,7 +31,7 @@ def test_main_caption():
 
 def test_secondary_caption():
     date = datetime(2022, 5, 17)
-    caption, article_title = bot.go(date=date, post=False)
+    caption, article_title, ids = bot.go(date=date, post=False)
     primary_caption = bot.post.generate_primary_caption(caption)
     secondary_caption = bot.post.generate_secondary_caption(
         article_title, caption, primary_caption
