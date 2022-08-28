@@ -48,9 +48,7 @@ def get_image(site, title):
     f = site.images[title]
     if not os.path.isdir(os.getcwd() + "/photos"):
         os.mkdir(os.getcwd() + "/photos")
-    path = (
-        f"{os.getcwd()}/photos/{str(round(time.time() * 1000))}.{title.split('.')[1]}"
-    )
+    path = f"{os.getcwd()}/photos/{str(round(time.time() * 1000))}.{title.rsplit('.', 1)[1]}"
     with open(path, "wb") as fd:
         f.download(fd)
 
