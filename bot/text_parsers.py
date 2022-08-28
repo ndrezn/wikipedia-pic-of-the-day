@@ -48,12 +48,11 @@ def clean_text(page, item_to_get):
             item = []
             c = wikicode[0].get("caption")
             for i in c.splitlines():
-                i = i.split("|")[0]
-                if [i.endswith(".jpg") or i.endswith(".svg") or i.endswith(".png")]:
-                    if i.startswith("File:"):
-                        i = i[5:]
-                    item.append(i)
-
+                j = i.split("|")[0]
+                if j.endswith(".jpg") or j.endswith(".svg") or j.endswith(".png"):
+                    if j.startswith("File:"):
+                        j = j[5:]
+                    item.append(j)
         # Truncate to four images
         item = item[:4]
 
