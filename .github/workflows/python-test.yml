@@ -38,7 +38,7 @@ jobs:
         black . --check
     - name: Run pytest
       run: |
-        pytest -v
+        coverage run -m pytest
       env:
         API_KEY: ${{secrets.API_KEY}}
         API_SECRET_KEY: ${{secrets.API_SECRET_KEY}}
@@ -53,3 +53,8 @@ jobs:
         TEST_ACCESS: ${{secrets.TEST_ACCESS}}
         TEST_ACCESS_SECRET: ${{secrets.TEST_ACCESS_SECRET}}
         SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+    - name: Upload coverage report
+      run: |
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov

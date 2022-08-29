@@ -1,4 +1,5 @@
 # Wikipedia Picture of the Day
+[![][coverage img]][coverage]
 
 <p align="center">
     <img src="example.png", width=500>
