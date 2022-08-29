@@ -1,7 +1,10 @@
 import os
-from PIL import Image, ImageOps
+from PIL import Image
 from cairosvg import svg2png
 import time
+
+# Configure PIL to allow bigger images
+Image.MAX_IMAGE_PIXELS = 1000000000
 
 
 def resize_image(path):

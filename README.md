@@ -1,4 +1,5 @@
 # Wikipedia Picture of the Day
+[![codecov](https://codecov.io/gh/ndrezn/wikipedia-pic-of-the-day/branch/main/graph/badge.svg?token=P1RUFXQ1N8)](https://codecov.io/gh/ndrezn/wikipedia-pic-of-the-day)
 
 <p align="center">
     <img src="example.png", width=500>
