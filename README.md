@@ -1,9 +1,10 @@
 # Wikipedia Picture of the Day
-[![codecov](https://codecov.io/gh/ndrezn/wikipedia-pic-of-the-day/branch/main/graph/badge.svg?token=P1RUFXQ1N8)](https://codecov.io/gh/ndrezn/wikipedia-pic-of-the-day)
 
 <p align="center">
     <img src="example.png", width=500>
 </p>
+
+[![codecov](https://codecov.io/gh/ndrezn/wikipedia-pic-of-the-day/branch/main/graph/badge.svg?token=P1RUFXQ1N8)](https://codecov.io/gh/ndrezn/wikipedia-pic-of-the-day)
 
 Posts the picture of the day from Wikipedia daily to Twitter from [@wiki_potd](https://twitter.com/wiki_potd). Based on the community sourced [Wikipedia Picture of the Day](https://en.m.wikipedia.org/wiki/Wikipedia:Picture_of_the_day).
 
