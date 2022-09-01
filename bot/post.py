@@ -2,6 +2,7 @@ from . import text_parsers, image_handler, twitter_creds
 import datetime
 from mwclient import Site
 import os
+import time
 
 
 def generate_primary_caption(caption):
@@ -29,6 +30,17 @@ def generate_secondary_caption(title, caption, primary_caption):
     return reply_text
 
 
+def upload_video(api, tweet_content, path):
+    """
+    Without chunking the video, length is capped at 30s. This way we can post up to 140s.
+    """
+    video_id = api.UploadMediaChunked(media=path, media_category="tweet_video")
+    # Waits until the async processing of the uploaded media finishes and `video_id` becomes valid.
+    # 100s is maybe gratuitous, but better safe than sorry 😊
+    time.sleep(100)
+    api.PostUpdate(status=tweet_content, media=video_id)
+
+
 def upload_statuses(caption, paths, title, test):
     """
     Upload two statuses to Twitter: One with a photo and most of the caption,
@@ -39,10 +51,13 @@ def upload_statuses(caption, paths, title, test):
     else:
         api = twitter_creds.connect()
     primary_caption = generate_primary_caption(caption)
-    status = api.PostUpdate(
-        status=primary_caption,
-        media=paths,
-    )
+    if not paths[0].endswith(".mp4"):
+        status = api.PostUpdate(
+            status=primary_caption,
+            media=paths,
+        )
+    else:
+        status = upload_video(api, primary_caption, paths[0])
     secondary_caption = generate_secondary_caption(title, caption, primary_caption)
 
     if test:
@@ -82,7 +97,7 @@ def go(date=None, post=True, test=False):
 
     ids = []
     if post:
-        paths = [image_handler.get_image(site, i) for i in image_titles]
+        paths = [image_handler.get_image(site, i, date) for i in image_titles]
         ids = upload_statuses(caption, paths, article_title, test)
         for p in paths:
             os.remove(p)

@@ -79,3 +79,13 @@ def test_large_image():
     ids = post_on_date(date)
 
     assert len(ids) == 2
+
+
+def test_video_post():
+    """
+    Tests posting using a .webm video file
+    """
+    date = datetime(2022, 9, 1)
+    ids = post_on_date(date)
+
+    assert len(ids) == 2

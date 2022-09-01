@@ -8,3 +8,4 @@ python-dotenv==0.15.0
 beautifulsoup4==4.9.3
 unidecode==1.1.1
 cairosvg==2.5.2
+moviepy==1.0.3
