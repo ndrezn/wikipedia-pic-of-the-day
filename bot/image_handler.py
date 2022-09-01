@@ -35,14 +35,15 @@ def resize_image(path):
             video, 2, final_color=None
         )  # Add a short fadeout
 
-        path = path.replace(
+        new_path = path.replace(
             ".webm", ".mp4"
         )  # Store the file as .mp4; Twitter does not support .webm
         result.write_videofile(
-            path, preset="ultrafast"
+            new_path, preset="ultrafast"
         )  # Write the file, compress as much as reasonably possible
-
-        return path
+        # Remove the .webm file
+        os.remove(path)
+        return new_path
 
     img = Image.open(path)
     w, h = img.size
