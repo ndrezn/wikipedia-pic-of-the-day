@@ -1,6 +1,9 @@
 import os
 from PIL import Image
 from cairosvg import svg2png
+from moviepy.editor import VideoFileClip
+import moviepy
+
 import time
 
 # Configure PIL to allow bigger images
@@ -24,6 +27,24 @@ def resize_image(path):
         os.remove(path)
         path = path.replace("png", "jpg")
         rgb_im.save(path)
+    if path.endswith("webm"):
+        video = VideoFileClip(path).subclip(
+            0, 140
+        )  # Trim the clip to 140s, i.e. max length allowed by Twitter
+        result = moviepy.video.fx.all.fadeout(
+            video, 2, final_color=None
+        )  # Add a short fadeout
+
+        new_path = path.replace(
+            ".webm", ".mp4"
+        )  # Store the file as .mp4; Twitter does not support .webm
+        result.write_videofile(
+            new_path, preset="ultrafast"
+        )  # Write the file, compress as much as reasonably possible
+        # Remove the .webm file
+        os.remove(path)
+        return new_path
+
     img = Image.open(path)
     w, h = img.size
     # Shrink the image. Makes it quicker to upload and generally smaller. 2k is more than enough
@@ -44,17 +65,17 @@ def resize_image(path):
     return path
 
 
-def get_image(site, title):
+def get_image(site, title, date, i):
     """
     Download an image from Wikipedia to a local folder
     """
     f = site.images[title]
     if not os.path.isdir(os.getcwd() + "/photos"):
         os.mkdir(os.getcwd() + "/photos")
-    path = f"{os.getcwd()}/photos/{str(round(time.time() * 1000))}.{title.rsplit('.', 1)[1]}"
-    with open(path, "wb") as fd:
-        f.download(fd)
-
+    path = f"{os.getcwd()}/photos/{date.year}_{date.month}_{date.day}_{i}.{title.rsplit('.', 1)[1]}"
+    if not os.path.exists(path):
+        with open(path, "wb") as fd:
+            f.download(fd)
     path = resize_image(path)
 
     return path
