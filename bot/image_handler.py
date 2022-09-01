@@ -39,7 +39,7 @@ def resize_image(path):
             ".webm", ".mp4"
         )  # Store the file as .mp4; Twitter does not support .webm
         result.write_videofile(
-            path, preset="veryslow"
+            path, preset="ultrafast"
         )  # Write the file, compress as much as reasonably possible
 
         return path
