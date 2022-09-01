@@ -64,14 +64,14 @@ def resize_image(path):
     return path
 
 
-def get_image(site, title, date):
+def get_image(site, title, date, i):
     """
     Download an image from Wikipedia to a local folder
     """
     f = site.images[title]
     if not os.path.isdir(os.getcwd() + "/photos"):
         os.mkdir(os.getcwd() + "/photos")
-    path = f"{os.getcwd()}/photos/{date.year}_{date.month}_{date.day}.{title.rsplit('.', 1)[1]}"
+    path = f"{os.getcwd()}/photos/{date.year}_{date.month}_{date.day}_{i}.{title.rsplit('.', 1)[1]}"
     if not os.path.exists(path):
         with open(path, "wb") as fd:
             f.download(fd)

@@ -75,7 +75,7 @@ def upload_statuses(caption, paths, title, test):
     return status.id, reply_status.id
 
 
-def go(date=None, post=True, test=False):
+def go(date=None, download=True, post=True, test=False):
     """
     Gets the photo of the day, downloads the photo, and triggers posting
     """
@@ -96,11 +96,15 @@ def go(date=None, post=True, test=False):
     image_titles = text_parsers.clean_text(page, "image")
     article_title = text_parsers.clean_text(page, "title")
 
-    ids = []
+    ids, paths = [], []
+    if download or post:
+        paths = [
+            image_handler.get_image(site, title, date, i)
+            for i, title in enumerate(image_titles)
+        ]
     if post:
-        paths = [image_handler.get_image(site, i, date) for i in image_titles]
         ids = upload_statuses(caption, paths, article_title, test)
-        for p in paths:
-            os.remove(p)
+    for p in paths:
+        os.remove(p)
 
     return caption, article_title, ids
