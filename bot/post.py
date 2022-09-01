@@ -38,7 +38,8 @@ def upload_video(api, tweet_content, path):
     # Waits until the async processing of the uploaded media finishes and `video_id` becomes valid.
     # 100s is maybe gratuitous, but better safe than sorry 😊
     time.sleep(100)
-    api.PostUpdate(status=tweet_content, media=video_id)
+    status = api.PostUpdate(status=tweet_content, media=video_id)
+    return status
 
 
 def upload_statuses(caption, paths, title, test):
