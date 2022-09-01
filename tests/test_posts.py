@@ -8,8 +8,8 @@ from bot.twitter_creds import connect_test
 api = connect_test()
 
 
-def post_on_date(date):
-    caption, title, ids = bot.go(date=date, post=True, test=True)
+def post_on_date(date, post=True, download=True):
+    caption, title, ids = bot.go(date=date, post=post, download=download, test=True)
 
     return ids
 
@@ -36,9 +36,10 @@ def test_gallery_post():
 
 def test_gallery_post_2():
     date = datetime(2021, 12, 4)
-    ids = post_on_date(date)
+    ids = post_on_date(date, post=False, download=True)
 
-    assert len(ids) == 2
+    # Not expexting any IDs, but expecting a list
+    assert len(ids) == 0
 
 
 def test_multi_post():
@@ -46,9 +47,10 @@ def test_multi_post():
     Tests an edge case where multiple pictures are provided as the picture of the day
     """
     date = datetime(2022, 7, 25)
-    ids = post_on_date(date)
+    ids = post_on_date(date, post=False, download=True)
 
-    assert len(ids) == 2
+    # Not expexting any IDs, but expecting a list
+    assert len(ids) == 0
 
 
 def test_svg_post():
@@ -66,9 +68,10 @@ def test_png_post():
     Tests posting using PNG image
     """
     date = datetime(2022, 6, 14)
-    ids = post_on_date(date)
+    ids = post_on_date(date, post=False, download=True)
 
-    assert len(ids) == 2
+    # Not expexting any IDs, but expecting a list
+    assert len(ids) == 0
 
 
 def test_large_image():
