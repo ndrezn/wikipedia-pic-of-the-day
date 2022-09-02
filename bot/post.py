@@ -30,6 +30,20 @@ def generate_secondary_caption(title, caption, primary_caption):
     return reply_text
 
 
+def generate_attribution_caption(image_titles):
+    wm = Site("commons.wikimedia.org")
+    authors, source_links = zip(
+        *[text_parsers.get_image_information(wm, i) for i in image_titles]
+    )
+    authors = list(set(authors))
+    source_links = list(set(source_links))
+
+    caption = f"Authored by {', '.join(authors)}. " if authors[0] else ""
+    caption += f"Original image{'s' if len(source_links)>1 else ''} and metadata can be found at: {', '.join(source_links)}"
+
+    return caption
+
+
 def upload_video(api, tweet_content, path):
     """
     Without chunking the video, length is capped at 30s. This way we can post up to 140s.
@@ -42,7 +56,7 @@ def upload_video(api, tweet_content, path):
     return status
 
 
-def upload_statuses(caption, paths, title, test):
+def upload_statuses(caption, paths, title, image_titles, test):
     """
     Upload two statuses to Twitter: One with a photo and most of the caption,
     and another replying to that tweet with more caption (if applicable) and context
@@ -72,7 +86,13 @@ def upload_statuses(caption, paths, title, test):
         auto_populate_reply_metadata=True,
     )
 
-    return status.id, reply_status.id
+    attribution_status = context_api.PostUpdate(
+        status=generate_attribution_caption(image_titles),
+        in_reply_to_status_id=reply_status.id,
+        auto_populate_reply_metadata=True,
+    )
+
+    return status.id, reply_status.id, attribution_status.id
 
 
 def go(date=None, download=True, post=True, test=False):
@@ -103,8 +123,8 @@ def go(date=None, download=True, post=True, test=False):
             for i, title in enumerate(image_titles)
         ]
     if post:
-        ids = upload_statuses(caption, paths, article_title, test)
+        ids = upload_statuses(caption, paths, article_title, image_titles, test)
     for p in paths:
         os.remove(p)
 
-    return caption, article_title, ids
+    return caption, [article_title, image_titles], ids

@@ -61,3 +61,26 @@ def clean_text(page, item_to_get):
         item = item.strip_code()
 
     return item
+
+
+def get_image_information(site, title):
+    page = site.pages[f"File:{title}"]
+    parsed_text = mw.parse(page.text())
+    wikicode = parsed_text.filter_templates()
+
+    for i in wikicode:
+        try:
+            item = i.get("author").value
+            break
+        except ValueError:
+            pass
+        try:
+            item = i.get("Author").value
+            break
+        except ValueError:
+            pass
+
+    author = item.strip_code()
+    source_link = f"https://commons.wikimedia.org/wiki/File:{title}".replace(" ", "_")
+
+    return author, source_link

@@ -21,7 +21,7 @@ def test_post():
     date = datetime(2022, 5, 17)
     ids = post_on_date(date)
 
-    assert len(ids) == 2
+    assert len(ids) == 3
 
 
 def test_gallery_post():
@@ -31,7 +31,7 @@ def test_gallery_post():
     date = datetime(2022, 8, 28)
     ids = post_on_date(date)
 
-    assert len(ids) == 2
+    assert len(ids) == 3
 
 
 def test_gallery_post_2():
@@ -60,7 +60,7 @@ def test_svg_post():
     date = datetime(2022, 8, 25)
     ids = post_on_date(date)
 
-    assert len(ids) == 2
+    assert len(ids) == 3
 
 
 def test_png_post():
@@ -74,14 +74,14 @@ def test_png_post():
     assert len(ids) == 0
 
 
-def test_large_image():
+def test_large_post():
     """
     Tests posting using a large image. This image is 77mb.
     """
     date = datetime(2022, 8, 17)
     ids = post_on_date(date)
 
-    assert len(ids) == 2
+    assert len(ids) == 3
 
 
 def test_video_post():
@@ -91,4 +91,4 @@ def test_video_post():
     date = datetime(2022, 9, 1)
     ids = post_on_date(date)
 
-    assert len(ids) == 2
+    assert len(ids) == 3
