@@ -35,10 +35,10 @@ def generate_attribution_caption(image_titles):
     authors, source_links = zip(
         *[text_parsers.get_image_information(wm, i) for i in image_titles]
     )
-    authors = set(authors)
-    source_links = set(source_links)
+    authors = list(set(authors))
+    source_links = list(set(source_links))
 
-    caption = f"Authored by {', '.join(authors)}. " if authors else ""
+    caption = f"Authored by {', '.join(authors)}. " if authors[0] else ""
     caption += f"Original image{'s' if len(source_links)>1 else ''} and metadata can be found at: {', '.join(source_links)}"
 
     return caption
