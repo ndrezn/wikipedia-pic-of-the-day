@@ -28,12 +28,16 @@ def resize_image(path):
         path = path.replace("png", "jpg")
         rgb_im.save(path)
     if path.endswith("webm"):
-        video = VideoFileClip(path).subclip(
-            0, 140
-        )  # Trim the clip to 140s, i.e. max length allowed by Twitter
-        result = moviepy.video.fx.all.fadeout(
-            video, 2, final_color=None
-        )  # Add a short fadeout
+        video = VideoFileClip(path)
+        duration = video.duration
+
+        if duration > 140:
+            video.subclip(
+                0, 140
+            )  # Trim the clip to 140s, i.e. max length allowed by Twitter
+            result = moviepy.video.fx.all.fadeout(
+                video, 2, final_color=None
+            )  # Add a short fadeout
 
         new_path = path.replace(
             ".webm", ".mp4"
