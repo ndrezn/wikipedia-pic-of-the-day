@@ -1,7 +1,7 @@
 import os
 from PIL import Image
 from cairosvg import svg2png
-from moviepy.editor import VideoFileClip
+from moviepy.editor import VideoFileClip, AudioFileClip
 import moviepy
 
 import time
@@ -32,19 +32,23 @@ def resize_image(path):
         duration = video.duration
 
         if duration > 140:
-            video.subclip(
+            video = video.subclip(
                 0, 140
             )  # Trim the clip to 140s, i.e. max length allowed by Twitter
-            result = moviepy.video.fx.all.fadeout(
+            video = moviepy.video.fx.all.fadeout(
                 video, 2, final_color=None
             )  # Add a short fadeout
 
-        new_path = path.replace(
-            ".webm", ".mp4"
-        )  # Store the file as .mp4; Twitter does not support .webm
-        result.write_videofile(
-            new_path, preset="ultrafast"
-        )  # Write the file, compress as much as reasonably possible
+        new_path = path.replace(".webm", ".mp4")
+        # Store the file as .mp4; Twitter does not support .webm
+        video.write_videofile(
+            new_path,
+            temp_audiofile=new_path.replace(".mp4", ".m4a"),
+            remove_temp=True,
+            codec="libx264",
+            audio_codec="aac",
+            preset="ultrafast",
+        )
         # Remove the .webm file
         os.remove(path)
         return new_path
