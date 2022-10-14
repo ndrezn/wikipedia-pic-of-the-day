@@ -4,6 +4,8 @@ photos/
 *.DS_Store
 .vscode/
 nltk_data/
+*.dylib
+*.a
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
