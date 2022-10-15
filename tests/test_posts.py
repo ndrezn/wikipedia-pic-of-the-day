@@ -92,3 +92,13 @@ def test_video_post():
     ids = post_on_date(date)
 
     assert len(ids) == 3
+
+
+def test_short_video_post():
+    """
+    Tests posting using a .webm video file
+    """
+    date = datetime(2022, 10, 14)
+    ids = post_on_date(date)
+
+    assert len(ids) == 3
