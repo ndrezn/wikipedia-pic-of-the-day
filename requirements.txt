@@ -9,3 +9,4 @@ beautifulsoup4==4.9.3
 unidecode==1.1.1
 cairosvg==2.5.2
 moviepy==1.0.3
+numpy>=1.22.2 # not directly required, pinned by Snyk to avoid a vulnerability
