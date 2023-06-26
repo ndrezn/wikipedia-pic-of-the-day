@@ -1,8 +1,15 @@
-from . import text_parsers, image_handler, twitter_creds
+from . import creds, text_parsers, image_handler
 import datetime
 from mwclient import Site
 import os
 import time
+from datetime import timezone
+import requests
+
+from PIL import Image
+from io import BytesIO
+
+BLUESKY_BASE_URL = "https://bsky.social/xrpc"
 
 
 def generate_primary_caption(caption):
@@ -56,43 +63,179 @@ def upload_video(api, tweet_content, path):
     return status
 
 
-def upload_statuses(caption, paths, title, image_titles, test):
-    """
-    Upload two statuses to Twitter: One with a photo and most of the caption,
-    and another replying to that tweet with more caption (if applicable) and context
-    """
-    if test:
-        api = twitter_creds.connect_test()
-    else:
-        api = twitter_creds.connect()
-    primary_caption = generate_primary_caption(caption)
-    if not paths[0].endswith(".mp4"):
-        status = api.PostUpdate(
-            status=primary_caption,
-            media=paths,
+def get_image_bytes(path):
+    photo = Image.open(path)
+
+    wc_width, wc_height = photo.size
+    long_edge = int(1.1 * max(wc_width, wc_height))
+
+    paste_x = int(long_edge / 2 - wc_width / 2)
+    paste_y = int(long_edge / 2 - wc_height / 2)
+
+    bg = Image.new("RGB", (long_edge, long_edge), (255, 252, 233))
+    bg.paste(photo, (paste_x, paste_y))
+
+    image_io = BytesIO()
+
+    bg.save(image_io, format="jpeg")
+
+    # Twitter upload, tweet
+
+    image_io.seek(0)
+
+    return image_io
+
+
+def post_bluesky(
+    bsky_jwt,
+    bsky_did,
+    bluesky_base_url,
+    caption,
+    images=[],
+    reply_uri=None,
+    reply_cid=None,
+):
+    headers = {"Authorization": "Bearer " + bsky_jwt}
+
+    img_blobs = []
+    for image in images:
+        bsky_media_resp = requests.post(
+            bluesky_base_url + "/com.atproto.repo.uploadBlob",
+            data=image,
+            headers={**headers, "Content-Type": "image/jpg"},
         )
+
+        img_blobs.append(bsky_media_resp.json().get("blob"))
+
+    iso_timestamp = datetime.datetime.now(timezone.utc).isoformat()
+    iso_timestamp = iso_timestamp[:-6] + "Z"
+
+    if not reply_uri:
+        post_data = {
+            "repo": bsky_did,
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "text": caption,
+                "createdAt": iso_timestamp,
+                "embed": {
+                    "$type": "app.bsky.embed.images",
+                    "images": [{"image": img, "alt": caption} for img in img_blobs],
+                },
+            },
+        }
+
     else:
-        status = upload_video(api, primary_caption, paths[0])
+        post_data = {
+            "repo": bsky_did,
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "text": caption,
+                "createdAt": iso_timestamp,
+                "reply": {
+                    "parent": {
+                        "uri": reply_uri,
+                        "cid": reply_cid,
+                    },
+                    "root": {
+                        "uri": reply_uri,
+                        "cid": reply_cid,
+                    },
+                },
+            },
+        }
+
+    resp = requests.post(
+        BLUESKY_BASE_URL + "/com.atproto.repo.createRecord",
+        json=post_data,
+        headers=headers,
+    )
+    print(resp.json())
+
+    return resp.json()
+
+
+def upload_statuses(
+    caption,
+    paths,
+    title,
+    image_titles,
+    test,
+    post_to_twitter=False,
+    post_to_bluesky=True,
+):
+    """
+    Upload our statuses and replies to Twitter, Bsky, Mastodon
+    """
+    primary_caption = generate_primary_caption(caption)
     secondary_caption = generate_secondary_caption(title, caption, primary_caption)
+    attribution_caption = generate_attribution_caption(image_titles)
 
-    if test:
-        context_api = twitter_creds.connect_test()
-    else:
-        context_api = twitter_creds.connect_context()
+    if post_to_twitter:
+        if test:
+            api = creds.connect_test()
+        else:
+            api = creds.connect()
+        if not paths[0].endswith(".mp4"):
+            status = api.PostUpdate(
+                status=primary_caption,
+                media=paths,
+            )
+        else:
+            status = upload_video(api, primary_caption, paths[0])
 
-    reply_status = context_api.PostUpdate(
-        status=secondary_caption,
-        in_reply_to_status_id=status.id,
-        auto_populate_reply_metadata=True,
-    )
+        if test:
+            context_api = creds.connect_test()
+        else:
+            context_api = creds.connect_context()
 
-    attribution_status = context_api.PostUpdate(
-        status=generate_attribution_caption(image_titles),
-        in_reply_to_status_id=reply_status.id,
-        auto_populate_reply_metadata=True,
-    )
+        reply_status = context_api.PostUpdate(
+            status=secondary_caption,
+            in_reply_to_status_id=status.id,
+            auto_populate_reply_metadata=True,
+        )
 
-    return status.id, reply_status.id, attribution_status.id
+        attribution_status = context_api.PostUpdate(
+            status=attribution_caption,
+            in_reply_to_status_id=reply_status.id,
+            auto_populate_reply_metadata=True,
+        )
+
+    if post_to_bluesky:
+        images = [get_image_bytes(path) for path in paths]
+
+        bluesky_status = post_bluesky(
+            *creds.connect_bluesky(
+                BLUESKY_BASE_URL, os.getenv("BSKY_USERNAME"), os.getenv("BSKY_PASSWORD")
+            ),
+            BLUESKY_BASE_URL,
+            primary_caption,
+            images=images,
+        )
+
+        reply_creds = creds.connect_bluesky(
+            BLUESKY_BASE_URL,
+            os.getenv("BSKY_CONTEXT_USERNAME"),
+            os.getenv("BSKY_CONTEXT_PASSWORD"),
+        )
+
+        bluesky_reply = post_bluesky(
+            *reply_creds,
+            BLUESKY_BASE_URL,
+            secondary_caption,
+            reply_uri=bluesky_status["uri"],
+            reply_cid=bluesky_status["cid"],
+        )
+
+        bluesky_attribution = post_bluesky(
+            *reply_creds,
+            BLUESKY_BASE_URL,
+            attribution_caption,
+            reply_uri=bluesky_reply["uri"],
+            reply_cid=bluesky_reply["cid"],
+        )
+
+    return
 
 
 def go(date=None, download=True, post=True, test=False):

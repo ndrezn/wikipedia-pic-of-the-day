@@ -2,7 +2,7 @@ from datetime import datetime
 import pytest
 
 import bot
-from bot.twitter_creds import connect_test
+from bot.creds import connect_test
 
 
 api = connect_test()
