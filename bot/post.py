@@ -258,7 +258,7 @@ def upload_statuses(
             reply_cid=bluesky_reply["cid"],
         )
 
-    return
+    return True
 
 
 def go(date=None, download=True, post=True, test=False):
@@ -282,15 +282,15 @@ def go(date=None, download=True, post=True, test=False):
     image_titles = text_parsers.clean_text(page, "image")
     article_title = text_parsers.clean_text(page, "title")
 
-    ids, paths = [], []
+    posted, paths = False, []
     if download or post:
         paths = [
             image_handler.get_image(site, title, date, i)
             for i, title in enumerate(image_titles)
         ]
     if post:
-        ids = upload_statuses(caption, paths, article_title, image_titles, test)
+        posted = upload_statuses(caption, paths, article_title, image_titles, test)
     for p in paths:
         os.remove(p)
 
-    return caption, [article_title, image_titles], ids
+    return caption, [article_title, image_titles], posted
