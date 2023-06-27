@@ -6,6 +6,8 @@ import time
 from datetime import timezone
 import requests
 
+import re
+
 from PIL import Image
 from io import BytesIO
 
@@ -28,6 +30,7 @@ def generate_secondary_caption(title, caption, primary_caption):
         caption[len(primary_caption) :],
         280 - len(reply_text.format(' "... "', title, link[:23])),
     )
+    link = "https://" + link
 
     if excess_caption:
         reply_text = reply_text.format(f' "... {excess_caption.strip()}"', title, link)
@@ -95,6 +98,7 @@ def post_bluesky(
     reply_uri=None,
     reply_cid=None,
 ):
+
     headers = {"Authorization": "Bearer " + bsky_jwt}
 
     img_blobs = []
@@ -109,6 +113,16 @@ def post_bluesky(
 
     iso_timestamp = datetime.datetime.now(timezone.utc).isoformat()
     iso_timestamp = iso_timestamp[:-6] + "Z"
+
+    def extract_urls(string):
+        url_pattern = re.compile(
+            r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+        )
+        urls = re.findall(url_pattern, string)
+        url_positions = [
+            (match.start(), match.end()) for match in re.finditer(url_pattern, string)
+        ]
+        return urls, url_positions
 
     if not reply_uri:
         post_data = {
@@ -126,6 +140,8 @@ def post_bluesky(
         }
 
     else:
+        uris, positions = extract_urls(caption)
+
         post_data = {
             "repo": bsky_did,
             "collection": "app.bsky.feed.post",
@@ -142,6 +158,15 @@ def post_bluesky(
                         "cid": reply_cid,
                     },
                 },
+                "facets": [
+                    {
+                        "index": {"byteStart": pos[0], "byteEnd": pos[1]},
+                        "features": [
+                            {"$type": "app.bsky.richtext.facet#link", "uri": uri}
+                        ],
+                    }
+                    for uri, pos in zip(uris, positions)
+                ],
             },
         }
 
@@ -150,7 +175,6 @@ def post_bluesky(
         json=post_data,
         headers=headers,
     )
-    print(resp.json())
 
     return resp.json()
 
