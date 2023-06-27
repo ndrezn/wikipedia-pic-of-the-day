@@ -9,6 +9,7 @@ Posts the picture of the day from Wikipedia daily to Twitter from [@wiki_potd](h
 
 Also powers a sibling account [@potd_context](https://twitter.com/potd_context), which posts article titles, links, and extra captioning.
 
+This account is also on Bluesky at [@wiki-potd.bsky.social](https://bsky.app/profile/wiki-potd.bsky.social) and [@potd-context.bsky.social](https://bsky.app/profile/potd-context.bsky.social).
 ## Usage
 Note that correct API keys are required as environment variables.
 

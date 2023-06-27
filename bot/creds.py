@@ -1,5 +1,6 @@
 import twitter
 import os
+import requests
 
 
 def connect():
@@ -27,3 +28,18 @@ def connect_test():
         access_token_key=os.getenv("TEST_ACCESS"),
         access_token_secret=os.getenv("TEST_ACCESS_SECRET"),
     )
+
+
+def connect_bluesky(bluesky_base_url, username, password):
+    resp = requests.post(
+        bluesky_base_url + "/com.atproto.server.createSession",
+        json={
+            "identifier": username,
+            "password": password,
+        },
+    )
+    resp_data = resp.json()
+
+    jwt = resp_data["accessJwt"]
+    did = resp_data["did"]
+    return jwt, did
