@@ -40,7 +40,7 @@ def test_secondary_caption():
         ' "... Almost all (98 percent) of Tanganyika cichlid species '
         "are endemic to the lake, and it is thus an important biological "
         'resource for the study of speciation in evolution." Appears '
-        'in "Altolamprologus compressiceps": en.wikipedia.org/wiki/Altolamprologus_compressiceps'
+        'in "Altolamprologus compressiceps": https://en.wikipedia.org/wiki/Altolamprologus_compressiceps'
     )
 
 
