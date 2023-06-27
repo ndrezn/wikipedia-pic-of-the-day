@@ -8,7 +8,7 @@ from bot.creds import connect_test
 api = connect_test()
 
 
-def post_on_date(date, post=True, download=True):
+def post_on_date(date, post=False, download=True):
     caption, title, ids = bot.go(date=date, post=post, download=download, test=True)
 
     return ids
