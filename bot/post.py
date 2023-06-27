@@ -98,7 +98,6 @@ def post_bluesky(
     reply_uri=None,
     reply_cid=None,
 ):
-
     headers = {"Authorization": "Bearer " + bsky_jwt}
 
     img_blobs = []
