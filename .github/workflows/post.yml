@@ -20,7 +20,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Post to Twitter
+    - name: Post to socials
       run: |
         bash run.sh
       env:
@@ -37,3 +37,7 @@ jobs:
          TEST_ACCESS: ${{secrets.TEST_ACCESS}}
          TEST_ACCESS_SECRET: ${{secrets.TEST_ACCESS_SECRET}}
          SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}} 
+         BSKY_USERNAME: ${secrets.BSKY_USERNAME}}
+         BSKY_PASSWORD: ${secrets.BSKY_PASSWORD}}
+         BSKY_CONTEXT_USERNAME: ${secrets.BSKY_CONTEXT_USERNAME}}
+         BSKY_CONTEXT_PASSWORD: ${secrets.BSKY_CONTEXT_PASSWORD}}
