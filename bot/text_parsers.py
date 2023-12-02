@@ -71,16 +71,18 @@ def get_image_information(site, title):
     for i in wikicode:
         try:
             item = i.get("author").value
+            author = item.strip_code()
             break
         except ValueError:
             pass
+       
         try:
             item = i.get("Author").value
+            author = item.strip_code()
             break
         except ValueError:
-            pass
+            author = None
 
-    author = item.strip_code()
     source_link = f"https://commons.wikimedia.org/wiki/File:{title}".replace(" ", "_")
 
     return author, source_link
