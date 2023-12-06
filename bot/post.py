@@ -8,9 +8,6 @@ import requests
 
 import re
 
-from PIL import Image
-from io import BytesIO
-
 BLUESKY_BASE_URL = "https://bsky.social/xrpc"
 
 
@@ -64,29 +61,6 @@ def upload_video(api, tweet_content, path):
     time.sleep(100)
     status = api.PostUpdate(status=tweet_content, media=video_id)
     return status
-
-
-def get_image_bytes(path):
-    photo = Image.open(path)
-
-    wc_width, wc_height = photo.size
-    long_edge = int(1.1 * max(wc_width, wc_height))
-
-    paste_x = int(long_edge / 2 - wc_width / 2)
-    paste_y = int(long_edge / 2 - wc_height / 2)
-
-    bg = Image.new("RGB", (long_edge, long_edge), (255, 252, 233))
-    bg.paste(photo, (paste_x, paste_y))
-
-    image_io = BytesIO()
-
-    bg.save(image_io, format="jpeg")
-
-    # Twitter upload, tweet
-
-    image_io.seek(0)
-
-    return image_io
 
 
 def post_bluesky(
@@ -174,6 +148,11 @@ def post_bluesky(
         json=post_data,
         headers=headers,
     )
+    try:
+        resp.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed with response: {resp.json()}")
+        raise e
 
     return resp.json()
 
@@ -225,7 +204,7 @@ def upload_statuses(
         )
 
     if post_to_bluesky:
-        images = [get_image_bytes(path) for path in paths]
+        images = [image_handler.get_image_bytes(path) for path in paths]
 
         bluesky_status = post_bluesky(
             *creds.connect_bluesky(
