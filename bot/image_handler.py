@@ -8,13 +8,14 @@ import io
 # Configure PIL to allow bigger images
 Image.MAX_IMAGE_PIXELS = 1000000000
 
-def get_image_bytes(input_file_path, max_size_kb=900, quality=85):
+def get_image_bytes(input_file_path, max_size_kb=900, quality=85, target_size=(2000, 2000)):
     '''
     Compresses the image to the required size and adds a border to make it square
     '''
     # Open the input image file
     with Image.open(input_file_path) as img:
-        # Continue attempting to compress until we hit the desired size
+        # Resize the image to the target size (e.g., 800x800 pixels)
+        img.thumbnail(target_size, Image.ANTIALIAS)        # Continue attempting to compress until we hit the desired size
         while True:
             # Calculate the dimensions of the square canvas
             wc_width, wc_height = img.size
