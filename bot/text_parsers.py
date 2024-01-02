@@ -68,6 +68,8 @@ def get_image_information(site, title):
     parsed_text = mw.parse(page.text())
     wikicode = parsed_text.filter_templates()
 
+    author = None
+
     for i in wikicode:
         try:
             item = i.get("author").value
@@ -75,13 +77,6 @@ def get_image_information(site, title):
             break
         except ValueError:
             pass
-       
-        try:
-            item = i.get("Author").value
-            author = item.strip_code()
-            break
-        except ValueError:
-            author = None
 
     source_link = f"https://commons.wikimedia.org/wiki/File:{title}".replace(" ", "_")
 
