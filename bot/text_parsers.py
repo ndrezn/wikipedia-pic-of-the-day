@@ -26,6 +26,24 @@ def generate_link(title):
     return title
 
 
+def expand_param(page, name):
+    """
+    Ask Wikipedia to render a single POTD parameter, e.g. {{POTD/2026-10-06|caption}}
+    """
+    result = page.site.get(
+        "expandtemplates", text=f"{{{{{page.name}|{name}}}}}", prop="wikitext"
+    )
+    return mw.parse(result["expandtemplates"]["wikitext"])
+
+
+def get_param(page, potd, name):
+    # Deeply nested markup (e.g. a substituted {{Inflation}}) can stop
+    # mwparserfromhell from recognising the POTD template at all
+    if potd is not None and potd.has(name):
+        return potd.get(name).value
+    return expand_param(page, name)
+
+
 def clean_text(page, item_to_get):
     parsed_text = mw.parse(page.text())
     if item_to_get == "title":
@@ -34,19 +52,26 @@ def clean_text(page, item_to_get):
         title = title.prettify()
         title = unidecode(str(title)).strip()
         return title
-    wikicode = parsed_text.filter_templates()
+    potd = next(
+        (
+            t
+            for t in parsed_text.filter_templates(recursive=False)
+            if t.name.strip().startswith("POTD")
+        ),
+        None,
+    )
 
     if item_to_get == "image":
-        items = []
-        for i in wikicode[0].params:
-            if "image" in i.name:
-                items.append(i.name)
-        item = list(map(lambda i: wikicode[0].get(i).value.strip_code(), items))
+        if potd is not None:
+            items = [i.name for i in potd.params if "image" in i.name]
+        else:
+            items = ["image"]
+        item = [get_param(page, potd, i).strip_code().strip() for i in items]
 
         # Case in which the PoTD is a gallery
         if item[0] == "Blank300.png":
             item = []
-            c = wikicode[0].get("caption")
+            c = get_param(page, potd, "caption")
             for i in c.splitlines():
                 j = i.split("|")[0]
                 if j.endswith(".jpg") or j.endswith(".svg") or j.endswith(".png"):
@@ -57,7 +82,7 @@ def clean_text(page, item_to_get):
         item = item[:4]
 
     else:
-        item = wikicode[0].get(item_to_get).value
+        item = get_param(page, potd, item_to_get)
         item = item.strip_code()
 
     return item

@@ -10,25 +10,26 @@ from mwclient import Site
 from . import creds, image_handler, text_parsers
 
 BLUESKY_BASE_URL = "https://bsky.social/xrpc"
+# Bluesky counts graphemes; len() counts code points, which is never fewer
+MAX_POST_LENGTH = 300
 
 
 def generate_primary_caption(caption):
-    short_caption = text_parsers.shorten_caption(caption, 280)
+    short_caption = text_parsers.shorten_caption(caption, MAX_POST_LENGTH)
     return short_caption
 
 
 def generate_secondary_caption(title, caption, primary_caption):
-    # Add reply tweet with a link to the original article
-    link = text_parsers.generate_link(title)
+    # Add reply post with a link to the original article
+    link = "https://" + text_parsers.generate_link(title)
     title = title.split("#")[0]  # Cut off any pageheadings
     reply_text = '{} Appears in "{}": {}'
 
-    # Note that links are abbreviated to 23 characters
+    # Bluesky doesn't shorten links, so the full link counts towards the limit
     excess_caption = text_parsers.shorten_caption(
         caption[len(primary_caption) :],
-        280 - len(reply_text.format(' "... "', title, link[:23])),
+        MAX_POST_LENGTH - len(reply_text.format(' "... "', title, link)),
     )
-    link = "https://" + link
 
     if excess_caption:
         reply_text = reply_text.format(f' "... {excess_caption.strip()}"', title, link)
@@ -43,11 +44,18 @@ def generate_attribution_caption(image_titles):
     authors, source_links = zip(
         *[text_parsers.get_image_information(wm, i) for i in image_titles]
     )
-    authors = list(set(authors))
-    source_links = list(set(source_links))
+    # Dedupe while keeping gallery order, so trimming drops the last images
+    authors = list(dict.fromkeys(authors))
+    source_links = list(dict.fromkeys(source_links))
 
     caption = f"Authored by {', '.join(authors)}. " if authors[0] else ""
-    caption += f"Original image{'s' if len(source_links) > 1 else ''} and metadata can be found at: {', '.join(source_links)}"
+    caption += f"Original image{'s' if len(source_links) > 1 else ''} and metadata can be found at: "
+
+    # Galleries can have more source links than fit in one post
+    links = source_links
+    while len(links) > 1 and len(caption + ", ".join(links)) > MAX_POST_LENGTH:
+        links = links[:-1]
+    caption += ", ".join(links)
 
     return caption
 
@@ -70,10 +78,21 @@ def post_bluesky(
     bluesky_base_url,
     caption,
     images=[],
+    video=None,
     reply_uri=None,
     reply_cid=None,
 ):
     headers = {"Authorization": "Bearer " + bsky_jwt}
+
+    video_blob = None
+    if video:
+        bsky_media_resp = requests.post(
+            bluesky_base_url + "/com.atproto.repo.uploadBlob",
+            data=video,
+            headers={**headers, "Content-Type": "video/mp4"},
+        )
+        bsky_media_resp.raise_for_status()
+        video_blob = bsky_media_resp.json().get("blob")
 
     img_blobs = []
     for image in images:
@@ -93,12 +112,33 @@ def post_bluesky(
             r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
         )
         urls = re.findall(url_pattern, string)
+        # Facets index into the UTF-8 bytes, not the characters
         url_positions = [
-            (match.start(), match.end()) for match in re.finditer(url_pattern, string)
+            (
+                len(string[: match.start()].encode()),
+                len(string[: match.end()].encode()),
+            )
+            for match in re.finditer(url_pattern, string)
         ]
         return urls, url_positions
 
-    if not reply_uri:
+    if video_blob:
+        post_data = {
+            "repo": bsky_did,
+            "collection": "app.bsky.feed.post",
+            "record": {
+                "$type": "app.bsky.feed.post",
+                "text": caption,
+                "createdAt": iso_timestamp,
+                "embed": {
+                    "$type": "app.bsky.embed.video",
+                    "video": video_blob,
+                    "alt": caption,
+                },
+            },
+        }
+
+    elif not reply_uri:
         post_data = {
             "repo": bsky_did,
             "collection": "app.bsky.feed.post",
@@ -205,16 +245,32 @@ def upload_statuses(
         )
 
     if post_to_bluesky:
-        images = [image_handler.get_image_bytes(path) for path in paths]
-
-        bluesky_status = post_bluesky(
-            *creds.connect_bluesky(
-                BLUESKY_BASE_URL, os.getenv("BSKY_USERNAME"), os.getenv("BSKY_PASSWORD")
-            ),
-            BLUESKY_BASE_URL,
-            primary_caption,
-            images=images,
+        main_creds = creds.connect_bluesky(
+            BLUESKY_BASE_URL, os.getenv("BSKY_USERNAME"), os.getenv("BSKY_PASSWORD")
         )
+
+        bluesky_status = None
+        if paths[0].endswith(".mp4"):
+            try:
+                with open(paths[0], "rb") as f:
+                    video = f.read()
+                bluesky_status = post_bluesky(
+                    *main_creds, BLUESKY_BASE_URL, primary_caption, video=video
+                )
+            except requests.exceptions.RequestException as e:
+                # Fall back to posting a still from the video
+                print(f"Video post failed, posting a still frame instead: {e}")
+                images = [image_handler.get_video_frame(paths[0])]
+        else:
+            images = [image_handler.get_image_bytes(path) for path in paths]
+
+        if not bluesky_status:
+            bluesky_status = post_bluesky(
+                *main_creds,
+                BLUESKY_BASE_URL,
+                primary_caption,
+                images=images,
+            )
 
         reply_creds = creds.connect_bluesky(
             BLUESKY_BASE_URL,
