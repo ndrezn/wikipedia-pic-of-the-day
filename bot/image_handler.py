@@ -101,6 +101,18 @@ def resize_image(path):
     return path
 
 
+def get_video_frame(path):
+    """
+    Get a compressed still from partway through a video
+    """
+    frame_path = path.rsplit(".", 1)[0] + "_frame.jpg"
+    with VideoFileClip(path) as video:
+        video.save_frame(frame_path, t=min(5, video.duration / 2))
+    frame = get_image_bytes(frame_path)
+    os.remove(frame_path)
+    return frame
+
+
 def get_image(site, title, date, i):
     """
     Download an image from Wikipedia to a local folder
