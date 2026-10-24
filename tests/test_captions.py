@@ -68,6 +68,15 @@ def test_secondary_caption():
     )
 
 
+def test_caption_keeps_template_output():
+    """
+    Numbers wrapped in templates like {{nowrap}} used to be dropped (#41)
+    """
+    date = datetime(2025, 3, 7)
+    caption, titles, ids = bot.go(date=date, post=False, download=False)
+    assert "1977 kilograms (4358 lbs) of cargo" in caption
+
+
 def test_attribution_caption():
     date = datetime(2022, 5, 17)
     caption, titles, ids = bot.go(date=date, post=False, download=False)

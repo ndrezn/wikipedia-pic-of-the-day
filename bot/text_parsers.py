@@ -82,7 +82,9 @@ def clean_text(page, item_to_get):
         item = item[:4]
 
     else:
-        item = get_param(page, potd, item_to_get)
+        # strip_code() drops templates entirely, losing things like numbers in
+        # {{nowrap}} or {{Inflation}}, so let Wikipedia render them first
+        item = expand_param(page, item_to_get)
         item = item.strip_code()
 
     return item
