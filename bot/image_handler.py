@@ -1,49 +1,55 @@
+import io
 import os
-from PIL import Image
+
+import moviepy
 from cairosvg import svg2png
 from moviepy.editor import VideoFileClip
-import moviepy
-import io
+from PIL import Image
 
 # Configure PIL to allow bigger images
 Image.MAX_IMAGE_PIXELS = 1000000000
 
-def get_image_bytes(input_file_path, max_size_kb=900, quality=85, target_size=(2000, 2000)):
-    '''
+
+def get_image_bytes(
+    input_file_path, max_size_kb=900, quality=85, target_size=(2000, 2000)
+):
+    """
     Compresses the image to the required size and adds a border to make it square
-    '''
+    """
     # Open the input image file
     with Image.open(input_file_path) as img:
         # Resize the image to the target size (e.g., 800x800 pixels)
-        img.thumbnail(target_size, Image.ANTIALIAS)        # Continue attempting to compress until we hit the desired size
+        img.thumbnail(
+            target_size, Image.ANTIALIAS
+        )  # Continue attempting to compress until we hit the desired size
         while True:
             # Calculate the dimensions of the square canvas
             wc_width, wc_height = img.size
             long_edge = int(1.1 * max(wc_width, wc_height))
-            
+
             # Calculate coordinates to paste the original image onto the center of the canvas
             paste_x = int(long_edge / 2 - wc_width / 2)
             paste_y = int(long_edge / 2 - wc_height / 2)
-            
+
             # Create a new square canvas with a white background
             bg = Image.new("RGB", (long_edge, long_edge), (255, 252, 233))
-            
+
             # Paste the original image onto the center of the canvas
             bg.paste(img, (paste_x, paste_y))
-            
+
             # Create a BytesIO object to store the image bytes
             image_io = io.BytesIO()
-            
+
             # Save the compressed and padded image to the BytesIO object with quality
             bg.save(image_io, format="JPEG", quality=quality)
-            
+
             # Calculate the size of the saved image
             saved_size_kb = len(image_io.getvalue()) / 1024
-            
+
             # Check if the size is within the desired range
             if saved_size_kb <= max_size_kb:
                 return image_io.getvalue()  # Return the compressed image as bytes
-            
+
             # Reduce the quality and continue compressing
             quality -= 5
             if quality <= 0:
@@ -54,7 +60,6 @@ def resize_image(path):
     """
     Resize a local image to conform to Twitter restrictions
     """
-    base = 2160
     if path.endswith("svg"):
         svg_file = open(path)
         svg_code = svg_file.read()

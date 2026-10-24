@@ -1,12 +1,13 @@
-from . import creds, text_parsers, image_handler
 import datetime
-from mwclient import Site
 import os
+import re
 import time
 from datetime import timezone
-import requests
 
-import re
+import requests
+from mwclient import Site
+
+from . import creds, image_handler, text_parsers
 
 BLUESKY_BASE_URL = "https://bsky.social/xrpc"
 
@@ -46,7 +47,7 @@ def generate_attribution_caption(image_titles):
     source_links = list(set(source_links))
 
     caption = f"Authored by {', '.join(authors)}. " if authors[0] else ""
-    caption += f"Original image{'s' if len(source_links)>1 else ''} and metadata can be found at: {', '.join(source_links)}"
+    caption += f"Original image{'s' if len(source_links) > 1 else ''} and metadata can be found at: {', '.join(source_links)}"
 
     return caption
 
@@ -197,7 +198,7 @@ def upload_statuses(
             auto_populate_reply_metadata=True,
         )
 
-        attribution_status = context_api.PostUpdate(
+        context_api.PostUpdate(
             status=attribution_caption,
             in_reply_to_status_id=reply_status.id,
             auto_populate_reply_metadata=True,
@@ -229,7 +230,7 @@ def upload_statuses(
             reply_cid=bluesky_status["cid"],
         )
 
-        bluesky_attribution = post_bluesky(
+        post_bluesky(
             *reply_creds,
             BLUESKY_BASE_URL,
             attribution_caption,

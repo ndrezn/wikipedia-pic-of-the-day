@@ -1,6 +1,7 @@
-import twitter
 import os
+
 import requests
+import twitter
 
 
 def connect():

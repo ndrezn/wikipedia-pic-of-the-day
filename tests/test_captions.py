@@ -1,5 +1,6 @@
-import bot
 from datetime import datetime
+
+import bot
 
 
 def test_main_caption_length():
