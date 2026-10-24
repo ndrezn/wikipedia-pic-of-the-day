@@ -1,3 +1,30 @@
+[project]
+name = "wikipedia-pic-of-the-day"
+version = "0.1.0"
+description = "Posts the Wikipedia Picture of the Day to Bluesky"
+requires-python = ">=3.10"
+dependencies = [
+    "python-twitter==3.5",
+    "mwclient==0.10.1",
+    "mwparserfromhell==0.5.4",
+    "Pillow==9.4.0",
+    "schedule==0.6.0",
+    "nltk==3.8.1",
+    "beautifulsoup4==4.9.3",
+    "unidecode==1.1.1",
+    "cairosvg==2.5.2",
+    "moviepy==1.0.3",
+    # Not directly required, pinned by Snyk to avoid vulnerabilities
+    "numpy>=1.22.2",
+    "urllib3>=2.2.2",
+]
+
+[dependency-groups]
+dev = ["pytest", "coverage"]
+
+[tool.uv]
+package = false
+
 [tool.ruff.lint]
 # Pin the rule set so new ruff releases don't change what CI checks
 select = ["E4", "E7", "E9", "F", "I"]
