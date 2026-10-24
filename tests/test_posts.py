@@ -1,9 +1,7 @@
 from datetime import datetime
-import pytest
 
 import bot
 from bot.creds import connect_test
-
 
 api = connect_test()
 

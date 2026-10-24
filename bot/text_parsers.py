@@ -1,5 +1,5 @@
-import nltk
 import mwparserfromhell as mw
+import nltk
 from bs4 import BeautifulSoup
 from unidecode import unidecode
 
