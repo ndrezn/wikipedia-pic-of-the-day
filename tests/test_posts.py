@@ -1,13 +1,10 @@
 from datetime import datetime
 
 import bot
-from bot.creds import connect_test
-
-api = connect_test()
 
 
 def post_on_date(date, post=False, download=True):
-    caption, title, posted = bot.go(date=date, post=post, download=download, test=True)
+    caption, title, posted = bot.go(date=date, post=post, download=download)
 
     return posted == post
 

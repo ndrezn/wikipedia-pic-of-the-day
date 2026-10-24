@@ -57,7 +57,7 @@ def get_image_bytes(
 
 def resize_image(path):
     """
-    Resize a local image to conform to Twitter restrictions
+    Convert a local image or video to a format we can post
     """
     if path.endswith("svg"):
         svg_file = open(path)
@@ -76,13 +76,11 @@ def resize_image(path):
         duration = video.duration
 
         if duration > 140:
-            video = video.subclipped(
-                0, 140
-            )  # Trim the clip to 140s, i.e. max length allowed by Twitter
+            video = video.subclipped(0, 140)  # Trim the clip to 140s
             video = video.with_effects([vfx.FadeOut(2)])  # Add a short fadeout
 
         new_path = path.replace(".webm", ".mp4")
-        # Store the file as .mp4; Twitter does not support .webm
+        # Store the file as .mp4, which Bluesky accepts
         video.write_videofile(
             new_path,
             temp_audiofile=new_path.replace(".mp4", ".m4a"),
