@@ -19,6 +19,6 @@ Note that correct API keys are required as environment variables.
 **To run**
 ```
 # CONFIGURE ENVIRONMENT VARIABLES
-pip install -r requirements.txt
-bash run.sh
+uv sync
+uv run bash run.sh
 ```

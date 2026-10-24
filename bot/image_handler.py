@@ -1,9 +1,8 @@
 import io
 import os
 
-import moviepy
 from cairosvg import svg2png
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip, vfx
 from PIL import Image
 
 # Configure PIL to allow bigger images
@@ -20,7 +19,7 @@ def get_image_bytes(
     with Image.open(input_file_path) as img:
         # Resize the image to the target size (e.g., 800x800 pixels)
         img.thumbnail(
-            target_size, Image.ANTIALIAS
+            target_size, Image.LANCZOS
         )  # Continue attempting to compress until we hit the desired size
         while True:
             # Calculate the dimensions of the square canvas
@@ -77,12 +76,10 @@ def resize_image(path):
         duration = video.duration
 
         if duration > 140:
-            video = video.subclip(
+            video = video.subclipped(
                 0, 140
             )  # Trim the clip to 140s, i.e. max length allowed by Twitter
-            video = moviepy.video.fx.all.fadeout(
-                video, 2, final_color=None
-            )  # Add a short fadeout
+            video = video.with_effects([vfx.FadeOut(2)])  # Add a short fadeout
 
         new_path = path.replace(".webm", ".mp4")
         # Store the file as .mp4; Twitter does not support .webm

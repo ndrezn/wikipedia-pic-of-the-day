@@ -1,3 +1,26 @@
+[project]
+name = "wikipedia-pic-of-the-day"
+version = "0.1.0"
+description = "Posts the Wikipedia Picture of the Day to Bluesky"
+requires-python = ">=3.14"
+dependencies = [
+    "python-twitter==3.5",
+    "mwclient>=0.11.0",
+    "mwparserfromhell>=0.7.2",
+    "pillow>=10.3.0",
+    "nltk>=3.9",
+    "beautifulsoup4>=4.15.0",
+    "unidecode>=1.4.0",
+    "cairosvg>=2.7.0",
+    "moviepy>=2.2.1",
+]
+
+[dependency-groups]
+dev = ["pytest", "coverage"]
+
+[tool.uv]
+package = false
+
 [tool.ruff.lint]
 # Pin the rule set so new ruff releases don't change what CI checks
 select = ["E4", "E7", "E9", "F", "I"]
