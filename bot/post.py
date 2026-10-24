@@ -1,7 +1,6 @@
 import datetime
 import os
 import re
-import time
 from datetime import timezone
 
 import requests
@@ -63,18 +62,6 @@ def generate_attribution_caption(image_titles):
     caption += ", ".join(links)
 
     return caption
-
-
-def upload_video(api, tweet_content, path):
-    """
-    Without chunking the video, length is capped at 30s. This way we can post up to 140s.
-    """
-    video_id = api.UploadMediaChunked(media=path, media_category="tweet_video")
-    # Waits until the async processing of the uploaded media finishes and `video_id` becomes valid.
-    # 100s is maybe gratuitous, but better safe than sorry 😊
-    time.sleep(100)
-    status = api.PostUpdate(status=tweet_content, media=video_id)
-    return status
 
 
 def post_bluesky(
@@ -208,46 +195,14 @@ def upload_statuses(
     paths,
     title,
     image_titles,
-    test,
-    post_to_twitter=False,
     post_to_bluesky=True,
 ):
     """
-    Upload our statuses and replies to Twitter, Bsky, Mastodon
+    Upload our post and replies to Bluesky
     """
     primary_caption = generate_primary_caption(caption)
     secondary_caption = generate_secondary_caption(title, caption, primary_caption)
     attribution_caption = generate_attribution_caption(image_titles)
-
-    if post_to_twitter:
-        if test:
-            api = creds.connect_test()
-        else:
-            api = creds.connect()
-        if not paths[0].endswith(".mp4"):
-            status = api.PostUpdate(
-                status=primary_caption,
-                media=paths,
-            )
-        else:
-            status = upload_video(api, primary_caption, paths[0])
-
-        if test:
-            context_api = creds.connect_test()
-        else:
-            context_api = creds.connect_context()
-
-        reply_status = context_api.PostUpdate(
-            status=secondary_caption,
-            in_reply_to_status_id=status.id,
-            auto_populate_reply_metadata=True,
-        )
-
-        context_api.PostUpdate(
-            status=attribution_caption,
-            in_reply_to_status_id=reply_status.id,
-            auto_populate_reply_metadata=True,
-        )
 
     if post_to_bluesky:
         main_creds = creds.connect_bluesky(
@@ -302,7 +257,7 @@ def upload_statuses(
     return True
 
 
-def go(date=None, download=True, post=True, test=False):
+def go(date=None, download=True, post=True):
     """
     Gets the photo of the day, downloads the photo, and triggers posting
     """
@@ -330,7 +285,7 @@ def go(date=None, download=True, post=True, test=False):
             for i, title in enumerate(image_titles)
         ]
     if post:
-        posted = upload_statuses(caption, paths, article_title, image_titles, test)
+        posted = upload_statuses(caption, paths, article_title, image_titles)
     for p in paths:
         os.remove(p)
 
