@@ -63,13 +63,13 @@ def resize_image(path):
         svg_file = open(path)
         svg_code = svg_file.read()
         os.remove(path)
-        path = path.replace("svg", "png")
+        path = os.path.splitext(path)[0] + ".png"
         svg2png(bytestring=svg_code, write_to=path)
     if path.endswith("png"):
         im = Image.open(path)
         rgb_im = im.convert("RGB")
         os.remove(path)
-        path = path.replace("png", "jpg")
+        path = os.path.splitext(path)[0] + ".jpg"
         rgb_im.save(path)
     if path.endswith("webm"):
         video = VideoFileClip(path)
@@ -81,11 +81,11 @@ def resize_image(path):
             )  # Trim the clip to 140s, i.e. max length allowed by Twitter
             video = video.with_effects([vfx.FadeOut(2)])  # Add a short fadeout
 
-        new_path = path.replace(".webm", ".mp4")
+        new_path = os.path.splitext(path)[0] + ".mp4"
         # Store the file as .mp4; Twitter does not support .webm
         video.write_videofile(
             new_path,
-            temp_audiofile=new_path.replace(".mp4", ".m4a"),
+            temp_audiofile=os.path.splitext(new_path)[0] + ".m4a",
             remove_temp=True,
             codec="libx264",
             audio_codec="aac",
