@@ -81,6 +81,8 @@ def post_bluesky(
     video=None,
     reply_uri=None,
     reply_cid=None,
+    root_uri=None,
+    root_cid=None,
 ):
     headers = {"Authorization": "Bearer " + bsky_jwt}
 
@@ -108,9 +110,9 @@ def post_bluesky(
     iso_timestamp = iso_timestamp[:-6] + "Z"
 
     def extract_urls(string):
-        url_pattern = re.compile(
-            r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
-        )
+        # Links run to the next space, minus a comma separating them; Commons
+        # file names can contain non-ASCII characters
+        url_pattern = re.compile(r"https?://\S+?(?=,?(?:\s|$))")
         urls = re.findall(url_pattern, string)
         # Facets index into the UTF-8 bytes, not the characters
         url_positions = [
@@ -167,9 +169,10 @@ def post_bluesky(
                         "uri": reply_uri,
                         "cid": reply_cid,
                     },
+                    # Every reply in a thread points at the thread's first post
                     "root": {
-                        "uri": reply_uri,
-                        "cid": reply_cid,
+                        "uri": root_uri or reply_uri,
+                        "cid": root_cid or reply_cid,
                     },
                 },
                 "facets": [
@@ -292,6 +295,8 @@ def upload_statuses(
             attribution_caption,
             reply_uri=bluesky_reply["uri"],
             reply_cid=bluesky_reply["cid"],
+            root_uri=bluesky_status["uri"],
+            root_cid=bluesky_status["cid"],
         )
 
     return True
