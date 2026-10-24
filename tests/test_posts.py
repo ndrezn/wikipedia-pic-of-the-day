@@ -1,100 +1,70 @@
+"""
+Downloads real Pictures of the Day and checks they come out ready to post
+"""
+
 from datetime import datetime
 
-import bot
-from bot.creds import connect_test
+import pytest
+from moviepy import VideoFileClip
+from mwclient import Site
+from PIL import Image
 
-api = connect_test()
+from bot import image_handler, text_parsers
 
-
-def post_on_date(date, post=False, download=True):
-    caption, title, posted = bot.go(date=date, post=post, download=download, test=True)
-
-    return posted == post
+pytestmark = pytest.mark.network
 
 
-def test_post():
-    """
-    Base case
-    """
-    date = datetime(2022, 5, 17)
-    posted = post_on_date(date)
-
-    assert posted
-
-
-def test_gallery_post():
-    """
-    Tests an edge case where a gallery is provided as the picture of the day
-    """
-    date = datetime(2022, 8, 28)
-    posted = post_on_date(date)
-
-    assert posted
+def download(date):
+    site = Site("en.wikipedia.org")
+    page = site.pages[f"Template:POTD/{date:%Y-%m-%d}"]
+    image_titles = text_parsers.clean_text(page, "image")
+    return [
+        image_handler.get_image(site, title, date, i)
+        for i, title in enumerate(image_titles)
+    ]
 
 
-def test_gallery_post_2():
-    date = datetime(2021, 12, 4)
-    posted = post_on_date(date, download=True)
-
-    # Not expexting any IDs, but expecting a list
-    assert posted
+@pytest.fixture(autouse=True)
+def photos_in_tmp(tmp_path, monkeypatch):
+    # get_image saves into ./photos
+    monkeypatch.chdir(tmp_path)
 
 
-def test_multi_post():
-    """
-    Tests an edge case where multiple pictures are provided as the picture of the day
-    """
-    date = datetime(2022, 7, 25)
-    posted = post_on_date(date, download=True)
+@pytest.mark.parametrize(
+    "date, count",
+    [
+        pytest.param(datetime(2022, 5, 17), 1, id="jpg"),
+        pytest.param(datetime(2022, 8, 28), 4, id="gallery"),
+        pytest.param(datetime(2021, 12, 4), None, id="gallery-2"),
+        pytest.param(datetime(2022, 7, 25), 2, id="multiple-images"),
+        pytest.param(datetime(2022, 8, 25), 1, id="svg"),
+        pytest.param(datetime(2022, 6, 14), 1, id="png"),
+        pytest.param(datetime(2022, 8, 17), 1, id="77mb-image"),
+    ],
+)
+def test_images_ready_to_post(date, count):
+    paths = download(date)
 
-    assert posted
-
-
-def test_svg_post():
-    """
-    Tests posting using SVG image
-    """
-    date = datetime(2022, 8, 25)
-    posted = post_on_date(date)
-
-    assert posted
-
-
-def test_png_post():
-    """
-    Tests posting using PNG image
-    """
-    date = datetime(2022, 6, 14)
-    posted = post_on_date(date, download=True)
-
-    assert posted
+    assert paths and (count is None or len(paths) == count)
+    for path in paths:
+        assert path.endswith(".jpg")
+        with Image.open(path) as image:
+            assert image.format == "JPEG"
+        compressed = image_handler.get_image_bytes(path)
+        assert len(compressed) <= 900 * 1024
 
 
-def test_large_post():
-    """
-    Tests posting using a large image. This image is 77mb.
-    """
-    date = datetime(2022, 8, 17)
-    posted = post_on_date(date)
+@pytest.mark.parametrize(
+    "date",
+    [
+        pytest.param(datetime(2022, 9, 1), id="video"),
+        pytest.param(datetime(2022, 10, 14), id="short-video"),
+    ],
+)
+def test_videos_ready_to_post(date):
+    (path,) = download(date)
 
-    assert posted
-
-
-def test_video_post():
-    """
-    Tests posting using a .webm video file
-    """
-    date = datetime(2022, 9, 1)
-    posted = post_on_date(date)
-
-    assert posted
-
-
-def test_short_video_post():
-    """
-    Tests posting using a .webm video file
-    """
-    date = datetime(2022, 10, 14)
-    posted = post_on_date(date)
-
-    assert posted
+    assert path.endswith(".mp4")
+    with VideoFileClip(path) as video:
+        assert 0 < video.duration <= 140
+    assert image_handler.get_video_frame(path)

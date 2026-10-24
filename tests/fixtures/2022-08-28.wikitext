@@ -1,0 +1,29 @@
+{{POTD {{{1|{{{style|default}}}}}}
+|image=Blank300.png
+|size=900
+|title=[[Treasury Note (1890–1891)|Treasury Note]]
+|texttitle=Treasury Note
+|caption=
+
+<gallery mode=packed class="center">
+File:US-$1-TN-1891-Fr-351.jpg|alt=Obverse and reverse of an 1891 one-dollar Treasury Note|$1: [[Edwin Stanton]]
+File:US-$2-TN-1891-Fr-357.jpg|alt=Obverse and reverse of an 1891 two-dollar Treasury Note|$2: [[James B. McPherson]]
+File:US-$5-TN-1891-Fr.365.jpg|alt=Obverse and reverse of an 1891 five-dollar Treasury Note|$5: [[George Henry Thomas]]
+</gallery>
+<gallery mode=packed class="center">
+File:US-$10-TN-1891-Fr-371.jpg|alt=Obverse and reverse of an 1891 ten-dollar Treasury Note|$10: [[Philip Sheridan]]
+File:US-$20-TN-1891-Fr-375a.jpg|alt=Obverse and reverse of an 1891 twenty-dollar Treasury Note|$20: [[John Marshall]]
+File:US-$50-TN-1891-Fr-376.jpg|alt=Obverse and reverse of an 1891 fifty-dollar Treasury Note|$50: [[William H. Seward]]
+</gallery>
+<gallery mode=packed class="center">
+File:US-$100-TN-1891-Fr-378.jpg|alt=Obverse and reverse of an 1891 one-hundred-dollar Treasury Note|$100: [[David Farragut]]
+File:US-$500-TN-1891-PROOF.jpg|alt=Obverse and reverse of an 1891 five-hundred-dollar Treasury Note|$500: [[William Tecumseh Sherman]]
+File:US-$1000-TN-1891-Fr-379c.jpg|alt=Obverse and reverse of an 1891 one-thousand-dollar Treasury Note|$1000: [[George Meade]]
+</gallery>
+
+The '''[[Treasury Note (1890–1891)|Treasury Note]]''' (also known as a Coin Note) was a type of [[representative money]] issued by the [[Federal government of the United States|United States government]] from 1890 until 1893 to individuals selling silver bullion to the [[United States Department of the Treasury|Treasury]]. A distinguishing feature of the 1890 series of Treasury Notes (and one that greatly appeals to collectors) is the extremely ornate designs on the reverse of the banknotes. It was intended to make counterfeiting much more difficult, but opponents argued that the extensive detail would make it more difficult to distinguish between genuine and counterfeit notes. Consequently, the designs for the reverse were simplified on the 1891 series of Treasury Notes, of which a complete set, comprising nine denominations from $1 to $1000, is pictured here. Each bears the engraved signatures of [[James Fount Tillman]] ([[Register of the Treasury]]) and [[Daniel N. Morgan]] ([[Treasurer of the United States]]), and a portrait of a different individual, as indicated above. The banknotes are part of the [[National Numismatic Collection]] at the [[Smithsonian Institution]].
+
+|credit=Banknote design credit: [[Bureau of Engraving and Printing]]; scanned by [[User:Godot13|Andrew Shiva]]
+}}<noinclude>[[Category:Wikipedia Picture of the day {{#time:F Y|{{SUBPAGENAME}}}}]]
+
+</noinclude>

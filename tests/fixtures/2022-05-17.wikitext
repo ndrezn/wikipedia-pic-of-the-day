@@ -1,0 +1,13 @@
+{{POTD {{{1|{{{style|default}}}}}}
+|image=Altolamprologus compressiceps - Karlsruhe Zoo 01.jpg
+|size=400
+|title=''[[Altolamprologus compressiceps]]''
+|texttitle=''Altolamprologus compressiceps''
+|caption=
+
+'''''[[Altolamprologus compressiceps]]''''' is a species of fish in the family [[Cichlid]]ae, endemic to the shallow rocky areas of [[Lake Tanganyika]]. The lake holds at least 250 species of cichlid fish, including species yet to be described. Almost all (98 percent) of Tanganyika cichlid species are [[Endemism|endemic]] to the lake, and it is thus an important biological resource for the study of [[speciation]] in evolution. ''A.&nbsp;compressiceps'' is categorized as a [[least-concern species]] by the [[International Union for Conservation of Nature]]. This fish was photographed at the [[Karlsruhe Zoo]] in Germany.
+
+|credit=Photograph credit: [[User:Llez|H.&nbsp;Zell]]
+}}<noinclude>[[Category:Wikipedia Picture of the day {{#time:F Y|{{SUBPAGENAME}}}}]]
+
+</noinclude>

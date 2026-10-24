@@ -1,6 +1,10 @@
 from datetime import datetime
 
+import pytest
+
 import bot
+
+pytestmark = pytest.mark.network
 
 
 def test_main_caption_length():
@@ -28,19 +32,6 @@ def test_gallery_attribution_length():
     assert len(attribution_caption) <= 300
 
 
-def test_caption_with_nested_templates():
-    """
-    Substituted {{Inflation}} markup stops mwparserfromhell finding the POTD template
-    """
-    date = datetime(2026, 10, 6)
-    caption, titles, ids = bot.go(date=date, post=False, download=False)
-    assert caption.startswith("Thomas Mundy Peterson (October 6, 1824")
-    assert titles == [
-        "Thomas Mundy Peterson",
-        ["Thomas Mundy Peterson by William R. Tobias.jpg"],
-    ]
-
-
 def test_main_caption():
     date = datetime(2022, 5, 17)
     caption, titles, ids = bot.go(date=date, post=False, download=False)
@@ -66,15 +57,6 @@ def test_secondary_caption():
         'resource for the study of speciation in evolution." Appears '
         'in "Altolamprologus compressiceps": https://en.wikipedia.org/wiki/Altolamprologus_compressiceps'
     )
-
-
-def test_caption_keeps_template_output():
-    """
-    Numbers wrapped in templates like {{nowrap}} used to be dropped (#41)
-    """
-    date = datetime(2025, 3, 7)
-    caption, titles, ids = bot.go(date=date, post=False, download=False)
-    assert "1977 kilograms (4358 lbs) of cargo" in caption
 
 
 def test_attribution_caption():

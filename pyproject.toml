@@ -21,6 +21,9 @@ dev = ["pytest", "coverage"]
 [tool.uv]
 package = false
 
+[tool.pytest.ini_options]
+markers = ["network: talks to live Wikipedia; skip with -m 'not network'"]
+
 [tool.ruff.lint]
 # Pin the rule set so new ruff releases don't change what CI checks
 select = ["E4", "E7", "E9", "F", "I"]
