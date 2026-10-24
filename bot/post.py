@@ -12,6 +12,11 @@ from . import creds, image_handler, text_parsers
 BLUESKY_BASE_URL = "https://bsky.social/xrpc"
 # Bluesky counts graphemes; len() counts code points, which is never fewer
 MAX_POST_LENGTH = 300
+# Wikimedia asks bots to identify themselves with a way to get in touch:
+# https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy
+USER_AGENT = (
+    "WikipediaPicOfTheDay/1.0 (https://github.com/ndrezn/wikipedia-pic-of-the-day)"
+)
 
 
 def generate_primary_caption(caption):
@@ -40,7 +45,7 @@ def generate_secondary_caption(title, caption, primary_caption):
 
 
 def generate_attribution_caption(image_titles):
-    wm = Site("commons.wikimedia.org")
+    wm = Site("commons.wikimedia.org", clients_useragent=USER_AGENT)
     authors, source_links = zip(
         *[text_parsers.get_image_information(wm, i) for i in image_titles]
     )
@@ -311,7 +316,7 @@ def go(date=None, download=True, post=True, test=False):
         + "-"
         + str(date.day).zfill(2)
     )
-    site = Site("en.wikipedia.org")
+    site = Site("en.wikipedia.org", clients_useragent=USER_AGENT)
     page = site.pages[title]
 
     caption = text_parsers.clean_text(page, "caption")
