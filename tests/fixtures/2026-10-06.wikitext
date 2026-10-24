@@ -1,0 +1,191 @@
+{{POTD {{{1|{{{style|default}}}}}}
+|image=Thomas Mundy Peterson by William R. Tobias.jpg
+|size=250
+|title=[[Thomas Mundy Peterson]]
+|texttitle=Thomas Mundy Peterson
+|caption=
+
+'''[[Thomas Mundy Peterson]]''' (October 6, 1824 – February 4, 1904) was a resident of [[Perth Amboy, New Jersey]], who has been claimed to be the first [[African Americans|African American]] to vote in an election under the provisions of the [[Fifteenth Amendment to the United States Constitution|15th Amendment]] to the [[Constitution of the United States]]. His vote was cast on March 31, 1870; the Amendment had been ratified almost two months earlier, on February 3, but was only officially certified by Secretary of State [[Hamilton Fish]] on March 30. To honor him as the first African-American voter after the passage of the 15th Amendment, in 1884, the citizens of Perth Amboy raised $70 (${{<!--
+1: if a mandatory field is unspecified, return error, else next test
+-->#ifexpr:
+    {{#if:70|0|1}}
+    or {{#if:1884|0|1}}
+   |<span class="error">Error when using {{tl|Inflation}}:<!--
+ --> {{Separated entries|separator=,&#32;|conjunction=&#32;and&#32;
+     |{{#if:US||{{para|index}} (parameter 1)}}
+     |{{#if:70||{{para|value}} (parameter 2)}}
+     |{{#if:1884||{{para|start_year}} (parameter 3)}}
+     }} must be specified.</span><!--
+ -->{{#if:||{{main other|[[Category:Pages with errors in inflation template]]}}}}<!--
+
+-->|{{<!--
+2: if index code is unrecognized, return error, else next test
+ -->#ifexpr:
+     not(
+      {{#ifexist:Template:Inflation/US|1|0}}
+      and {{Isnumeric|{{Inflation/year|US}}|boolean=true}}
+     )
+    |<span class="error">Error when using {{tl|Inflation}}:<!--
+  --> {{para|index|'''US'''}} (parameter 1) not a recognized index.</span><!--
+  -->{{#if:||{{main other|[[Category:Pages with errors in inflation template]]}}}}<!--
+
+ -->|{{<!--
+3: if a numeric parameter contain invalid data, return error, else next test
+  -->#ifexpr:
+      not(
+       {{Isnumeric|70|boolean=true}}
+       and {{Isnumeric|1884|boolean=true}}
+       and {{#if:  | {{Isnumeric|{{{4}}}|boolean=true}} | 1 }}
+       and {{#if: -2 | {{Isnumeric|-2|boolean=true}} | 1 }}
+      )
+     |<span class="error">Error when using {{tl|Inflation}}:<!--
+   --> [[NaN]], check parameters for non-numeric data:<!--
+   --> {{Separated entries|separator=,&#32;|conjunction=&#32;and&#32;
+       |{{Ifnumber|{{formatnum:70|R}}||{{para|value|'''70'''}} (parameter 2)}}
+       |{{Ifnumber|{{formatnum:1884|R}}||{{para|start_year|'''1884'''}} (parameter 3)}}
+       |{{#if:  | {{Ifnumber|{{formatnum:{{{4}}}|R}}||{{para|end_year|'''{{{4}}}'''}} (parameter 4)}} }}
+       |{{#if: -2 | {{Ifnumber|{{formatnum:-2|R}}||{{para|r|'''-2'''}}}} }}
+       }}.</span><!--
+   -->{{#if:||{{main other|[[Category:Pages with errors in inflation template]]}}}}<!--
+
+  -->|{{<!--
+4: if a parameter is out of calculable bounds, return error, else proceed
+   -->#ifexpr:
+       not(
+        ( 1884 >= {{Inflation/US/startyear}} )
+        and(
+         ( 1884 <= {{Inflation/year|US}} )
+         or ( 1884 = {{CURRENTYEAR}} )
+        )
+        and ( {{Inflation/year|US}} <= {{Inflation/year|US}} )
+       )
+      |<span class="error">Error when using {{tl|Inflation}}:<!--
+    --> {{Separated entries|separator=,&#32;|conjunction=&#32;and&#32;
+        |{{<!-- 4a: [parameter 3/start_year] too low -->
+         #ifexpr: 1884 < {{Inflation/US/startyear}}
+         |{{para|start_year|'''1884'''}} (parameter 3)<!--
+       --> is lower than the earliest available year ('''{{Inflation/US/startyear}}''')<!--
+       --> in index "'''US'''"<!--
+      -->}}
+        |{{<!-- 4b: [parameter 3/start_year] greater than [parameter 4/end_year]
+                ...and not equal to {{CURRENTYEAR}} if [parameter 4/end_year] is unspecified -->
+         #ifexpr:
+          ( 1884 > {{Inflation/year|US}} )
+          and ( 1884 != {{CURRENTYEAR}} )
+         |{{para|start_year|'''1884'''}} (parameter 3)<!--
+       --> is greater than<!--
+       --> {{<!--
+        -->#if:<!--
+        -->|{{para|end_year|'''{{{4}}}'''}} (parameter 4)<!--
+        -->|the latest available year ('''{{Inflation/year|US}}''')<!--
+         --> in index "'''US'''"<!--
+        -->}}<!--
+      -->}}
+        |{{<!-- 4c: [parameter 4/end_year] greater than [parameter 1/index] highest year -->
+         #ifexpr: {{Inflation/year|US}} > {{Inflation/year|US}}
+         |{{para|end_year|'''{{{4}}}'''}} (parameter 4)<!--
+       --> is greater than the latest available year ('''{{Inflation/year|US}}''')<!--
+       --> in index "'''US'''"<!--
+      -->}}<!--
+     -->}}.</span><!--
+    -->{{#if:||{{main other|[[Category:Pages with errors in inflation template]]}}}}<!--
+
+   -->|<!--
+begin template proper
+-->{{#ifeq:|yes|$70 (}}{{#ifeq:raw|eq|equivalent to $}}<!--
+-->{{formatnum:
+    {{
+    #iferror:
+     {{#invoke:Math|round|1={{
+     #expr:
+      {{formatnum:70|R}}
+      {{#ifeq:1884|{{CURRENTYEAR}}
+        | * 1
+        | {{Inflation/US|1884|{{Inflation/year|US}}}}
+        }}
+      round -2
+     }}|2=-2}}
+    |<span class="error">Error when using {{tl|Inflation}}:<!--
+  --> [[NaN]]/calculation error, please notify [[Template talk:Inflation]].</span><!--
+  -->{{main other|[[Category:Pages with errors in inflation template]]}}<!--
+     this error indicates template bug, always categorize
+ -->}}<!--
+ -->|{{#ifeq:raw|raw|R|}}<!--
+ -->}}<!--
+-->{{#ifeq:raw|eq|&#32;in<!--
+ --> {{<!--
+  -->#ifeq:1884|{{CURRENTYEAR}}<!--
+  -->|{{CURRENTYEAR}}<!--
+  -->|{{Inflation/year|US}}<!--
+  -->}}<!--
+-->}}<!--
+end template proper
+
+   -->}}<!-- 4
+  -->}}<!-- 3
+ -->}}<!-- 2
+-->}}<!-- 1 -->{{#ifeq:|yes|)}} in {{#switch:US
+<!-- *** When changing this, also update the reference in [[Template:Inflation/fn]] and the datasets for [[Template:Inflation]]! *** -->
+| AR = 2020
+| AT = 2018
+| AU = 2022
+| AU-road  = 2018
+| BD = 2023
+| BE = 2020
+| BR = 2020
+| CA = 2023
+| CH = 2021 
+| CL = 2024
+| CN = 2023
+| DE = 2021
+| DK = 2022
+| EG = 2018
+| ES = 2022
+| EU = 2023
+| FI = 2023
+| FR = 2022
+| GR = 2007
+| HK = 2020
+| ID = 2007
+| IL = 2021
+| IN = 2023
+| IR = 1398
+| IS = 2020
+| IT = 2020
+| JP = 2019
+| KRW = 2017
+| MX = 2007
+| NL = 2016
+| NO = 2017
+| NZ = 2024
+| PE = 2017
+| PH = 2021
+| PK = 2021
+| PL = 2021
+| PT = 2007
+| RU = 2023
+| SE = 2023
+| SG = 2022
+| TEST = 2012
+| TH = 2020
+| TR = 2021
+| TW = 2021
+| UK|GBP = 2023
+| UKGDP
+| UK-GDP
+| UK-CAP = 2023
+| US|USD = 2024
+| USGDP
+| US-GDP
+| US-CAP = 2023
+| VN = 2022
+| ZAR = 2018
+| ERR = <span class="error">Error: no index specified when using {{tl|Inflation/year}}.{{main other|[[Category:Pages with errors in inflation template]]}}</span>
+|#default  = <span class="error">Error: undefined index "US" when using {{tl|Inflation/year}}.{{main other|[[Category:Pages with errors in inflation template]]}}</span>
+}} dollars) to award him with a medal, consisting of a gold bar from which a medallion depicting [[Abraham Lincoln]] was hung. This photograph shows Peterson in 1884, wearing his medal.
+
+|credit=Photograph credit: William R. Tobias; restored by [[User:Adam Cuerden|Adam Cuerden]]
+}}<noinclude>[[Category:Wikipedia Picture of the day {{#time:F Y|{{SUBPAGENAME}}}}]]
+
+== See also ==
+* [[Template:POTD{{#ifeq:{{BASEPAGENAME}}|POTD protected||&#32;protected}}/{{SUBPAGENAME}}]]</noinclude>

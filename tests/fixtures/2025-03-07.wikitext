@@ -1,0 +1,13 @@
+{{POTD {{{1|{{{style|default}}}}}}
+|image=CRS-20 Dragon–Enhanced.jpg
+|size=500
+|title=[[SpaceX CRS-20|SpaceX {{nowrap|CRS-20}}]]
+|texttitle=SpaceX {{nowrap|CRS-20}}
+|caption=
+
+'''[[SpaceX CRS-20|SpaceX {{nowrap|CRS-20}}]]''' was a [[Commercial Resupply Services]] mission to the [[International Space Station]] (ISS) launched on March&nbsp;7, 2020. Contracted by [[NASA]] and flown by [[SpaceX]], the mission was the final flight of [[SpaceX Dragon 1|Dragon&nbsp;1]], before the introduction of [[SpaceX Dragon 2|Dragon&nbsp;2]]. {{nowrap|CRS-20}} was launched aboard [[Falcon&nbsp;9]] from [[Cape Canaveral Space Launch Complex 40|Space Launch Complex&nbsp;40]] at [[Cape Canaveral Space Force Station|Cape Canaveral Air Force Station]], and used Dragon capsule C112, which had previously flown to the ISS on [[SpaceX CRS-10|{{nowrap|CRS-10}}]] and [[SpaceX CRS-16|{{nowrap|CRS-16}}]]. {{nowrap|CRS-20}} arrived at the ISS on March&nbsp;9, 2020, and was captured by [[Mobile Servicing System|the station's robotic arm]]. It carried 1977 kilograms (4358 lbs) of cargo. This photograph shows the {{nowrap|CRS-20}} capsule approaching the ISS while around 267 miles (430 kilometres) above Namibia.
+
+|credit=Photograph credit: [[Johnson Space Center]]; edited by Nythar
+}}<noinclude>[[Category:Wikipedia Picture of the day {{#time:F Y|{{SUBPAGENAME}}}}]]
+
+</noinclude>
